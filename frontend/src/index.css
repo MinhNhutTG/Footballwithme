@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fwm-bg: #0e1330;
+  --color-fwm-bg-elev: #161c42;
+  --color-fwm-bg-deep: #0a0e26;
+  --color-fwm-card: #171e45;
+  --color-fwm-card-2: #10152f;
+  --color-fwm-line: rgba(150, 170, 255, 0.14);
+  --color-fwm-text: #eaeeff;
+  --color-fwm-muted: #8e97c4;
+  --color-fwm-accent: #ffd93d;
+  --color-fwm-ink: #0e1330;
+  --color-fwm-pink: #ff5a8a;
+  --color-fwm-pill: rgba(255, 255, 255, 0.06);
+
+  --font-head: "Archivo", sans-serif;
+  --font-body: "Sora", sans-serif;
+
+  --radius-fwm-sm: 9px;
+  --radius-fwm: 14px;
+  --radius-fwm-lg: 20px;
+  --radius-fwm-pill: 999px;
+
+  --shadow-fwm: 0 20px 54px rgba(0, 0, 0, 0.5);
+
+  --animate-fwm-float: fwmFloat 6s ease-in-out infinite;
+  --animate-fwm-pulse: fwmPulse 2.4s ease-in-out infinite;
+  --animate-fwm-glow: fwmGlow 3s ease-in-out infinite;
+  --animate-fwm-grid: fwmGrid 18s linear infinite;
+  --animate-fwm-ring: fwmRing 1.8s ease-out infinite;
+  --animate-fwm-combo: fwmCombo 1.6s ease-in-out infinite;
+  --animate-fwm-in: fwmIn 0.6s ease-out both;
+}
+
+[data-theme="light"] {
+  --color-fwm-bg: #f5f6fb;
+  --color-fwm-bg-elev: #ffffff;
+  --color-fwm-bg-deep: #eceef7;
+  --color-fwm-card: #ffffff;
+  --color-fwm-card-2: #f0f2fa;
+  --color-fwm-line: rgba(14, 19, 48, 0.12);
+  --color-fwm-text: #11163a;
+  --color-fwm-muted: #5b6388;
+  --color-fwm-pill: rgba(14, 19, 48, 0.05);
+  --shadow-fwm: 0 20px 54px rgba(14, 19, 48, 0.12);
+}
+
+@keyframes fwmFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fwmPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes fwmGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.35); }
+  50% { box-shadow: 0 0 60px 12px rgba(255, 217, 61, 0.25); }
+}
+
+@keyframes fwmGrid {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 -120px; }
+}
+
+@keyframes fwmRing {
+  0% { box-shadow: 0 0 0 0 rgba(255, 217, 61, 0.45); }
+  100% { box-shadow: 0 0 0 16px rgba(255, 217, 61, 0); }
+}
+
+@keyframes fwmCombo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes fwmIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-fwm-bg);
+  color: var(--color-fwm-text);
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-head);
+}

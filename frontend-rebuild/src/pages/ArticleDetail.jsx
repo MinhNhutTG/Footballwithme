@@ -61,7 +61,7 @@ function ArticleDetail({ articleId }) {
                     {isSkill && (
                         <div className="mb-8 overflow-hidden rounded-fwm-lg border border-fwm-line bg-fwm-card-2">
                             <div className={`relative flex aspect-video items-center justify-center bg-gradient-to-br ${article.gradient}`}>
-                                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink">▶</span>
+                                <span className="animate-fwm-ring flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink">▶</span>
                             </div>
                             <p className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-fwm-muted">
                                 {t.article.videoCaption}

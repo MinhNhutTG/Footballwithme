@@ -20,7 +20,7 @@ function App() {
         <Route path="/dang-nhap" element={<Login />} />
         <Route path="/dang-ky" element={<Register />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/chuyen-muc" element={<Category></Category>} />
+        <Route path="/chuyen- muc" element={<Category></Category>} />
         <Route path="/chuyen-muc/:id" element={<Category />}></Route>
         <Route path="/bai-viet/:id" element={<ArticleDetail />}></Route>
         <Route path="/tim-kiem" element={<Search />} ></Route>

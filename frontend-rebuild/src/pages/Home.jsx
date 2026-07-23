@@ -19,6 +19,15 @@ function Home() {
     return (
         <div className="animate-fwm-in">
             <section className="relative overflow-hidden border-b border-fwm-line bg-fwm-bg-deep">
+                <div
+                    className="absolute inset-0 animate-fwm-grid opacity-10"
+                    style={{
+                        backgroundImage:
+                            'linear-gradient(rgba(150,170,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(150,170,255,.4) 1px, transparent 1px)',
+                        backgroundSize: '40px 40px',
+                    }}
+                />
+
                 <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 lg:grid-cols-2 lg:py-24">
                     <div>
                         <span className="inline-flex items-center rounded-fwm-pill border border-fwm-line bg-fwm-pill px-3 py-1 font-head text-xs font-bold uppercase tracking-wider text-fwm-accent">
@@ -31,7 +40,13 @@ function Home() {
                         <p className="mt-5 max-w-md text-base text-fwm-muted">{t.hero.desc}</p>
                         <div className="mt-6 flex items-center gap-2">
                             {COMBO_KEYS.map((key, i) => (
-                                <span key={i} className={`flex h-9 w-9 items-center justify-center rounded-full border font-head text-sm font-bold ${key.className}`}>{key.label}</span>
+                                <span
+                                    key={i}
+                                    className={`flex h-9 w-9 animate-fwm-combo items-center justify-center rounded-full border font-head text-sm font-bold ${key.className}`}
+                                    style={{ animationDelay: `${i * 0.15}s` }}
+                                >
+                                    {key.label}
+                                </span>
                             ))}
                         </div>
                         <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -50,6 +65,25 @@ function Home() {
                             <div>
                                 <div className="font-head text-2xl font-extrabold text-fwm-text">8K+</div>
                                 <div className="text-xs text-fwm-muted">{t.hero.statPlayers}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative mx-auto w-full max-w-sm animate-fwm-float">
+                        <div className="animate-fwm-glow relative overflow-hidden rounded-fwm-lg border border-fwm-line bg-gradient-to-br from-amber-400 via-orange-500 to-pink-500 p-6">
+                            <span className="inline-flex rounded-fwm-pill bg-fwm-ink/70 px-3 py-1 font-head text-xs font-bold uppercase tracking-wide text-white">
+                                {t.hero.cardTag}
+                            </span>
+                            <h3 className="mt-20 font-head text-xl font-extrabold text-white">
+                                {t.hero.cardTitle}
+                            </h3>
+                            <div className="mt-4 flex items-center justify-between">
+                                <span className="font-head text-xs font-bold text-white/85">
+                                    {t.hero.cardRating}
+                                </span>
+                                <span className="animate-fwm-ring flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-fwm-ink">
+                                    ▶
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -27,10 +27,10 @@ Backend không đổi — cả `frontend` và `frontend-rebuild` cùng trỏ v�
 | 4 | Tìm kiếm & Yêu thích: FavoritesContext, Search, Favorites | `REBUILD_04_SEARCH_FAVORITES.md` | ⏳ Chưa bắt đầu |
 | 5 | Trang quản trị: CRUD bài viết + quản lý user | `REBUILD_05_ADMIN.md` | ⏳ Chưa bắt đầu |
 | 6 | Trang tĩnh: About, Contact, NotFound | `REBUILD_06_STATIC_PAGES.md` | ⏳ Chưa bắt đầu |
-| 7 | Trang cá nhân (Profile) | `PROFILE_MODULE.md` | ✅ Đã xong (11/11 bước) |
-| 8 | Bình luận (Comments) | `COMMENTS_MODULE.md` | ✅ Đã xong (8/9 bước, bỏ qua Error Boundary) |
+| 7 | Trang cá nhân (Profile) | `REBUILD_07_PROFILE.md` | ⏳ Chưa bắt đầu |
+| 8 | Bình luận (Comments) | `REBUILD_08_COMMENTS.md` | ⏳ Chưa bắt đầu |
 
-Module 7 và 8 đã được xây trong project hiện tại — không cần làm lại, chỉ tham khảo 2 file đó khi ráp nối vào App.jsx.
+**Cập nhật 2026-07-23:** Module 7 và 8 từng được làm trên `frontend/` cũ (`PROFILE_MODULE.md`, `COMMENTS_MODULE.md`) nhưng **chưa hề được rebuild trong `frontend-rebuild`** — đã verify: không có route `/ho-so`, không có file Profile trong `pages/`; `components/comment/` chỉ là folder rỗng. `REBUILD_07_PROFILE.md`/`REBUILD_08_COMMENTS.md` là 2 tài liệu mới, viết lại theo đúng cấu trúc `frontend-rebuild` hiện tại (tận dụng `api/users.js` và `components/ui/Avatar.jsx` đã có sẵn từ Module 5).
 
 ---
 
@@ -50,7 +50,7 @@ Module 7 và 8 đã được xây trong project hiện tại — không cần l�
 - **Module 4** dùng lại `usePosts` + `useAuth` vừa xong.
 - **Module 5 (Admin)** phức tạp nhất (CRUD, sort, filter, rich text editor) nên để gần cuối.
 - **Module 6** đơn giản nhất, không phụ thuộc gì — làm cuối để "dọn nốt".
-- **Module 7, 8** đã làm trước đó trong lịch sử project, chỉ cần biết vị trí ráp nối (Profile cần Auth; Comments gắn vào cuối ArticleDetail của module 3).
+- **Module 7, 8** làm sau cùng vì phụ thuộc module trước (Profile cần Auth; Comments gắn vào cuối ArticleDetail của module 3) — dù đã có tiền lệ ở `frontend/` cũ, vẫn cần viết lại từ đầu trong `frontend-rebuild`.
 
 ---
 
@@ -71,8 +71,8 @@ Module 7 và 8 đã được xây trong project hiện tại — không cần l�
 | CRUD form phức tạp + mảng lồng nhau (steps) | 5 |
 | Tích hợp thư viện ngoài (Tiptap rich text editor) | 5 |
 | Bảng dữ liệu: search + filter + sort (`useMemo`) | 5 |
-| `useState`, `useRef`, `useReducer`, `useMemo`, `useCallback`, `React.memo` | 7 (Profile — đã xong) |
-| Custom Hook, Context tự tạo nâng cao, Optimistic Update, `useLayoutEffect`, Portal, `forwardRef`, `useTransition` | 8 (Comments — đã xong) |
+| `useState`, `useRef`, `useReducer`, `useMemo`, `useCallback`, `React.memo` | 7 (Profile) |
+| Custom Hook, Context tự tạo nâng cao, Optimistic Update, `useLayoutEffect`, Portal, `forwardRef`, `useTransition` | 8 (Comments) |
 
 ---
 

@@ -21,16 +21,16 @@ Backend không đổi — cả `frontend` và `frontend-rebuild` cùng trỏ v�
 
 | # | Module | Tài liệu | Trạng thái |
 |---|--------|----------|-----------|
-| 1 | Nền tảng: providers, Context Theme/Lang, UI kit, Layout & điều hướng | `REBUILD_01_FOUNDATION.md` | ⏳ Chưa bắt đầu |
-| 2 | Xác thực: AuthContext, Login, Register | `REBUILD_02_AUTH.md` | ⏳ Chưa bắt đầu |
-| 3 | Dữ liệu bài viết: PostsContext, Home, Category, ArticleDetail | `REBUILD_03_POSTS.md` | ⏳ Chưa bắt đầu |
-| 4 | Tìm kiếm & Yêu thích: FavoritesContext, Search, Favorites | `REBUILD_04_SEARCH_FAVORITES.md` | ⏳ Chưa bắt đầu |
-| 5 | Trang quản trị: CRUD bài viết + quản lý user | `REBUILD_05_ADMIN.md` | ⏳ Chưa bắt đầu |
-| 6 | Trang tĩnh: About, Contact, NotFound | `REBUILD_06_STATIC_PAGES.md` | ⏳ Chưa bắt đầu |
-| 7 | Trang cá nhân (Profile) | `REBUILD_07_PROFILE.md` | ⏳ Chưa bắt đầu |
-| 8 | Bình luận (Comments) | `REBUILD_08_COMMENTS.md` | ⏳ Chưa bắt đầu |
+| 1 | Nền tảng: providers, Context Theme/Lang, UI kit, Layout & điều hướng | `REBUILD_01_FOUNDATION.md` | ✅ Xong |
+| 2 | Xác thực: AuthContext, Login, Register | `REBUILD_02_AUTH.md` | ✅ Xong |
+| 3 | Dữ liệu bài viết: PostsContext, Home, Category, ArticleDetail | `REBUILD_03_POSTS.md` | ✅ Xong |
+| 4 | Tìm kiếm & Yêu thích: FavoritesContext, Search, Favorites | `REBUILD_04_SEARCH_FAVORITES.md` | ✅ Xong |
+| 5 | Trang quản trị: CRUD bài viết + quản lý user | `REBUILD_05_ADMIN.md` | ✅ Xong |
+| 6 | Trang tĩnh: About, Contact, NotFound | `REBUILD_06_STATIC_PAGES.md` | ✅ Xong |
+| 7 | Trang cá nhân (Profile) | `REBUILD_07_PROFILE.md` | ✅ Xong (10/10 bước) |
+| 8 | Bình luận (Comments) | `REBUILD_08_COMMENTS.md` | ✅ Xong (10/10 bước + gap chưa-đăng-nhập đã vá) |
 
-**Cập nhật 2026-07-23:** Module 7 và 8 từng được làm trên `frontend/` cũ (`PROFILE_MODULE.md`, `COMMENTS_MODULE.md`) nhưng **chưa hề được rebuild trong `frontend-rebuild`** — đã verify: không có route `/ho-so`, không có file Profile trong `pages/`; `components/comment/` chỉ là folder rỗng. `REBUILD_07_PROFILE.md`/`REBUILD_08_COMMENTS.md` là 2 tài liệu mới, viết lại theo đúng cấu trúc `frontend-rebuild` hiện tại (tận dụng `api/users.js` và `components/ui/Avatar.jsx` đã có sẵn từ Module 5).
+**Cập nhật 2026-07-26:** Toàn bộ 8 module đã rebuild xong trong `frontend-rebuild`. Module 7 (Profile) hoàn tất 2026-07-25, route `/ho-so` đã có. Module 8 (Comments) hoàn tất 2026-07-26 — bao gồm cả phần "chưa đăng nhập → hiện link Đăng nhập thay vì form" (spec Bước 2 của `REBUILD_08_COMMENTS.md`) vốn bị bỏ sót lúc làm Bước 2 ban đầu, phát hiện và vá sau khi xong Bước 10.
 
 ---
 

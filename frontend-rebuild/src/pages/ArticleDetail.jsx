@@ -5,6 +5,8 @@ import { useFavorites } from '../context/FavoritesContext'
 import SkillStep from '../components/skill/SkillStep'
 import PopularItem from '../components/article/PopularItem'
 import ArticleCard from '../components/article/ArticleCard'
+import CommentSection from '../components/comment/CommentSection'
+import ErrorBoundary from '../components/common/ErrorBoundary'
 function ArticleDetail({ articleId }) {
     const { id } = useParams();
     const { posts, loading } = usePosts();
@@ -123,6 +125,13 @@ function ArticleDetail({ articleId }) {
                     </div>
                 </section>
             )}
+            <ErrorBoundary fallback={
+                <p className="mx-auto max-w-3xl px-4 py-8 text-sm text-fwm-muted">
+                    Không thể tải bình luận lúc này.
+                </p>
+            }>
+                <CommentSection postId={article.id}></CommentSection>
+            </ErrorBoundary>
         </>
     )
 }

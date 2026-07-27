@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     favorites: { type: [String], default: [] },
     bio: { type: String, default: '', trim: true, maxlength: 300 },
+    avatarUrl: {type: String, default: ''},
   },
   { timestamps: true }
 );

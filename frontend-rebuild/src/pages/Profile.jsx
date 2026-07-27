@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { updateMe } from '../api/users'
 import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
+import { uploadFile } from "../api/upload";
 
 function profileReducer(state, action) {
     switch (action.type) {
@@ -18,6 +19,8 @@ function profileReducer(state, action) {
             return { ...state, loading: false, success: true };
         case 'SUBMIT_ERROR':
             return { ...state, loading: false, error: action.error };
+        case 'SET_AVATAR_URL':
+            return {...state, avatarUrl: action.value};
         default: return state;
     }
 }
@@ -31,7 +34,8 @@ function Profile() {
     const [state, dispatch] = useReducer(profileReducer, {
         name: user?.name || '',
         bio: user?.bio || '',
-        preview: '',
+        avatarUrl: user?.avatarUrl || '',
+        preview: user?.avatarUrl || '',
         loading: false,
         error: '',
         success: false
@@ -46,8 +50,11 @@ function Profile() {
         return state.name.trim().split(' ').map((w) => (w[0])).join('').toUpperCase().slice(0, 2) || '?';
     }, [state.name])
 
-    const hasChanged = useMemo(() => state.name.trim() != user.name || state.bio !== (user.bio || '')
-        , [user, state.name, state.bio]);
+    const hasChanged = useMemo(() =>
+        state.name.trim() != user.name || 
+        state.bio !== (user.bio || '' ) ||
+        state.avatarUrl !== (user.avatarUrl || '')
+        , [user, state.name, state.bio, state.avatarUrl]);
 
     const handleAvatarClick = useCallback(() => {
         fileInputRef.current.click();
@@ -59,7 +66,10 @@ function Profile() {
         const reader = new FileReader();
         reader.onload = (ev) => { dispatch({ type: 'SET_PREVIEW', value: ev.target.result }) };
         reader.readAsDataURL(file);
-    }, [])
+        uploadFile(file, token)
+            .then((res)=> dispatch({type: 'SET_AVATAR_URL', value: res.url}))
+            .catch((err)=> dispatch({type: 'SUBMIT_ERROR', error: err.message}));
+    }, [token])
 
     const handleSubmit = useCallback(async () => {
         if (state.name.trim() === '') {
@@ -68,14 +78,14 @@ function Profile() {
         }
         dispatch({ type: 'SUBMIT_START' })
         try {
-            await updateMe({ name: state.name.trim(), bio: state.bio }, token);
-            updateUser({ name: state.name, bio: state.bio });
+            await updateMe({ name: state.name.trim(), bio: state.bio , avatarUrl: state.avatarUrl}, token);
+            updateUser({ name: state.name, bio: state.bio , avatarUrl: state.avatarUrl});
             dispatch({ type: 'SUBMIT_OK' })
         }
         catch (err) {
             dispatch({ type: 'SUBMIT_ERROR', error: err.message || t.profile.errorSave });
         }
-    }, [state.name, state.bio, token, updateUser, t]);
+    }, [state.name, state.bio, token, updateUser, t, state.avatarUrl]);
 
 
     if (!user) return null;

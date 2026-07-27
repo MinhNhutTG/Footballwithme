@@ -6,7 +6,7 @@ async function list(req, res, next) {
     if (!postId) return res.status(400).json({ message: 'postId is required' });
 
     const comments = await Comment.find({ postId })
-      .populate('author', 'name')
+      .populate('author', 'name avatarUrl')
       .sort({ createdAt: 1 });
 
     res.json(comments);
@@ -28,7 +28,7 @@ async function create(req, res, next) {
       author: req.user.id,
     });
 
-    await comment.populate('author', 'name');
+    await comment.populate('author', 'name avatarUrl');
     res.status(201).json(comment);
   } catch (err) {
     next(err);

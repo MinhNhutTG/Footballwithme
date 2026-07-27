@@ -22,7 +22,7 @@ function CommentItem({ comment }) {
 
     return (
         <div className="flex gap-3 rounded-fwm-lg border border-fwm-line bg-fwm-card p-4 transition hover:border-fwm-accent/40">
-            <Avatar initials={initial} size="sm" />
+            <Avatar initials={initial} size="sm" preview={comment.author.avatarUrl} />
             <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                     <p className="font-head text-sm font-bold text-fwm-text">{comment.author.name}</p>

@@ -57,13 +57,13 @@ async function getMe(req, res, next) {
 
 async function updateMe(req, res, next) {
   try {
-    const { name, bio } = req.body;
+    const { name, bio , avatarUrl} = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Name is required' });
     }
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name: name.trim(), bio: (bio || '').trim() },
+      { name: name.trim(), bio: (bio || '').trim(),  ...(avatarUrl !== undefined && {avatarUrl})},
       { new: true, runValidators: true }
     );
     res.json(user);

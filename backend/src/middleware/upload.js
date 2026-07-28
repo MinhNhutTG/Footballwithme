@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm'];
+const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime'];
 
 const upload = multer({
     storage: multer.memoryStorage(),

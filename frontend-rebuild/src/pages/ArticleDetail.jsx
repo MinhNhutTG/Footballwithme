@@ -64,21 +64,6 @@ function ArticleDetail({ articleId }) {
                 <article className="min-w-0">
                     {isSkill && (
                         <div className="mb-8 overflow-hidden rounded-fwm-lg border border-fwm-line bg-fwm-card-2">
-                            <div className={`relative flex aspect-video items-center justify-center bg-gradient-to-br ${article.gradient}`}>
-                                <span className="animate-fwm-ring flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink">▶</span>
-                            </div>
-                            <p className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-fwm-muted">
-                                {t.article.videoCaption}
-                            </p>
-                        </div>
-                    )}
-
-                    <p className="text-lg leading-relaxed text-fwm-text">
-                        {article.intro[lang]}
-                    </p>
-
-                    {isSkill && (
-                        <div className="mb-8 overflow-hidden rounded-fwm-lg border border-fwm-line bg-fwm-card-2">
                             {article.videoUrl ? (
                                 <video src={article.videoUrl} controls className="aspect-video w-full" />
                             ) : (
@@ -89,6 +74,23 @@ function ArticleDetail({ articleId }) {
                             <p className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-fwm-muted">
                                 {t.article.videoCaption}
                             </p>
+                        </div>
+                    )}
+
+                    <p className="text-lg leading-relaxed text-fwm-text">
+                        {article.intro[lang]}
+                    </p>
+
+                    {isSkill && article.steps && (
+                        <div className="mt-8">
+                            <h2 className="mb-4 font-head text-xl font-extrabold text-fwm-text">
+                                {t.article.stepsHeading}
+                            </h2>
+                            <div className="space-y-3">
+                                {article.steps.map((step, i) => (
+                                    <SkillStep key={i} step={step} index={i}></SkillStep>
+                                ))}
+                            </div>
                         </div>
                     )}
                     <div className="prose-content mt-8 leading-relaxed text-fwm-muted"

@@ -1,5 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { login as loginRequest, register as RegisterRequest } from "../api/auth"
+import {getMe} from "../api/users"
+
 const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
 
@@ -20,6 +22,18 @@ export function AuthProvider({ children }) {
         localStorage.setItem('fwm-user', JSON.stringify(data.user));
         return data.user;
     }
+
+    useEffect(()=>{
+        if (!token) return ;
+        getMe(token)
+        .then((freshUser)=>{
+            setUser(freshUser);
+            localStorage.setItem('fwm-user', JSON.stringify(freshUser))
+        })
+        .catch(()=>{
+            logout();
+        })
+    },[token])
 
     const login = async (email, password) => persist(await loginRequest({email, password}));
 

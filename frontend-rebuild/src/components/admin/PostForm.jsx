@@ -4,12 +4,16 @@ import Button from '../ui/Button';
 import RichTextEditor from './RichTextEditor';
 import GamepadKey from '../skill/GamepadKey';
 import { CATEGORIES } from '../../data/categories';
+import { uploadFile } from '../../api/upload';
+
 
 const EMPTY_FORM = {
   titleVi: '', titleEn: '', excerptVi: '', excerptEn: '',
   introVi: '', introEn: '', bodyVi: '', bodyEn: '',
   quoteVi: '', quoteEn: '', mistakeVi: '', mistakeEn: '',
   category: CATEGORIES[0].id, steps: [],
+  coverImageUrl: '',
+  videoUrl: '',
 };
 
 const EMPTY_STEP = { titleVi: '', titleEn: '', descVi: '', descEn: '', keyKind: 'default', keyLabel: '' };
@@ -22,9 +26,11 @@ const KEY_KINDS = [
   { value: 'cross', label: 'Chéo (xanh dương)' },
 ];
 
-function PostForm({ initial, onSubmit, onCancel }) {
+function PostForm({ initial, onSubmit, onCancel, token }) {
   const { t } = useLang();
   const [form, setForm] = useState({ ...EMPTY_FORM, ...initial });
+  const [fileError, setFileError] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
   const handleRichChange = (field) => (html) => setForm((f) => ({ ...f, [field]: html }));
@@ -62,6 +68,17 @@ function PostForm({ initial, onSubmit, onCancel }) {
     </div>
   );
 
+  const handleFileUpload = (field) => (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileError('');
+    setUploading(true);
+    uploadFile(file, token)
+      .then((res) => setForm((f) => ({ ...f, [field]: res.url })))
+      .catch((err) => setFileError(err.message))
+      .finally(() => setUploading(false));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-fwm-lg border border-fwm-line bg-fwm-card p-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formTitleVi', 'titleVi')}{textField('formTitleEn', 'titleEn')}</div>
@@ -81,6 +98,23 @@ function PostForm({ initial, onSubmit, onCancel }) {
           {CATEGORIES.map((cat) => <option key={cat.id} value={cat.id}>{t.categories[cat.id].label}</option>)}
         </select>
       </div>
+      <div>
+        <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Ảnh cover</label>
+        <input type="file" accept="image/*" onChange={handleFileUpload('coverImageUrl')}
+          className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text" />
+        {form.coverImageUrl && <img src={form.coverImageUrl} alt="" className="mt-2 h-32 w-full rounded-fwm object-cover" />}
+      </div>
+
+      {form.category === 'skill' && (
+        <div>
+          <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Video hướng dẫn (tùy chọn)</label>
+          <input type="file" accept="video/*" onChange={handleFileUpload('videoUrl')}
+            className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text" />
+          {form.videoUrl && <video src={form.videoUrl} controls className="mt-2 h-32 w-full rounded-fwm object-cover" />}
+        </div>
+      )}
+
+      {fileError && <p className="text-sm text-fwm-pink">{fileError}</p>}
 
       {form.category === 'skill' && (
         <div className="rounded-fwm-lg border border-fwm-line bg-fwm-card-2 p-4">
@@ -143,7 +177,7 @@ function PostForm({ initial, onSubmit, onCancel }) {
       )}
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" variant="primary">{t.admin.save}</Button>
+        <Button type="submit" variant="primary" disabled={uploading}>{uploading ? 'Đang tải file lên...' : t.admin.save}</Button>
         <Button type="button" variant="ghost" onClick={onCancel}>{t.admin.cancel}</Button>
       </div>
     </form>

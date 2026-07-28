@@ -32,6 +32,8 @@ const postSchema = new mongoose.Schema(
     quote: { type: bilingualString, default: () => ({ vi: '', en: '' }) },
     mistake: { type: bilingualString, default: () => ({ vi: '', en: '' }) },
     steps: { type: [stepSchema], default: [] },
+    coverImageUrl: {type: String, default: ''},
+    videoUrl: {type: String, default: ''},
   },
   { timestamps: true }
 );

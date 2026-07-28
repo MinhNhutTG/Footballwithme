@@ -24,6 +24,8 @@ function toFormValues(post) {
             descVi: step.desc?.vi || '', descEn: step.desc?.en || '',
             keyKind: step.keys?.[0]?.kind || 'default', keyLabel: step.keys?.[0]?.label || '',
         })),
+        coverImageUrl: post.coverImageUrl || '',
+        videoUrl: post.videoUrl || '',
     };
 }
 
@@ -71,6 +73,8 @@ function Admin() {
                     keys: [{ kind: step.keyKind, label: step.keyLabel }],
                 }))
                 : [],
+            coverImageUrl: form.coverImageUrl,
+            videoUrl: form.videoUrl,
         };
 
 
@@ -80,7 +84,7 @@ function Admin() {
                 setPosts((prev) => prev.map((p) => (p.id === editingId ? updated : p)));
             }
             else {
-                const created = await createPost({ ...payload, gradient: category?.gradient } ,token);
+                const created = await createPost({ ...payload, gradient: category?.gradient }, token);
                 setPosts((prev) => [created, ...prev]);
             }
             setView('list');
@@ -217,7 +221,7 @@ function Admin() {
                                     )
                                 }
                             </>) : (<>
-                                <PostForm initial={editingPost ? toFormValues(editingPost) : undefined} onSubmit={handleSubmit} onCancel={handleCancel} />
+                                <PostForm initial={editingPost ? toFormValues(editingPost) : undefined} onSubmit={handleSubmit} onCancel={handleCancel} token={token} />
                             </>)}
 
                         </div>

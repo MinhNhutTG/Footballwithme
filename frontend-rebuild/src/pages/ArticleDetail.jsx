@@ -32,8 +32,10 @@ function ArticleDetail({ articleId }) {
 
     return (
         <>
-            <section className={`relative border-b border-fwm-line bg-gradient-to-br ${article.gradient} px-4 py-16`}>
-                <div className="mx-auto max-w-4xl">
+            <section className={`relative border-b border-fwm-line px-4 py-16 ${article.coverImageUrl ? 'bg-cover bg-center' : `bg-gradient-to-br ${article.gradient}`}`}
+                style={article.coverImageUrl ? { backgroundImage: `url(${article.coverImageUrl})` } : undefined}>
+                {article.coverImageUrl && <div className="absolute inset-0 bg-fwm-ink/50" />}
+                <div className="relative mx-auto max-w-4xl">
                     <Link to={`/chuyen-muc/${article.category}`} className="font-head text-xs font-bold uppercase tracking-wide text-white/80 hover:text-white" >
                         ← {t.categories[article.category]?.label}
                     </Link>
@@ -75,16 +77,18 @@ function ArticleDetail({ articleId }) {
                         {article.intro[lang]}
                     </p>
 
-                    {isSkill && article.steps && (
-                        <div className="mt-8">
-                            <h2 className="mb-4 font-head text-xl font-extrabold text-fwm-text">
-                                {t.article.stepsHeading}
-                            </h2>
-                            <div className="space-y-3">
-                                {article.steps.map((step, i) => (
-                                    <SkillStep key={i} step={step} index={i}></SkillStep>
-                                ))}
-                            </div>
+                    {isSkill && (
+                        <div className="mb-8 overflow-hidden rounded-fwm-lg border border-fwm-line bg-fwm-card-2">
+                            {article.videoUrl ? (
+                                <video src={article.videoUrl} controls className="aspect-video w-full" />
+                            ) : (
+                                <div className={`relative flex aspect-video items-center justify-center bg-gradient-to-br ${article.gradient}`}>
+                                    <span className="animate-fwm-ring flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink">▶</span>
+                                </div>
+                            )}
+                            <p className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-fwm-muted">
+                                {t.article.videoCaption}
+                            </p>
                         </div>
                     )}
                     <div className="prose-content mt-8 leading-relaxed text-fwm-muted"

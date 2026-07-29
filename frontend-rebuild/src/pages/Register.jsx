@@ -3,6 +3,7 @@ import Button from '../components/ui/Button'
 import { Link,useNavigate } from 'react-router-dom'
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import GoogleButton from "../components/auth/GoogleButton";
 
 
 function Register() {
@@ -78,6 +79,14 @@ function Register() {
                     {t.auth.submitRegister}
                 </Button>
             </form>
+            <div className="mt-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-fwm-line" />
+                <span className="text-xs text-fwm-muted">hoặc</span>
+                <div className="h-px flex-1 bg-fwm-line" />
+            </div>
+            <div className="mt-4">
+                <GoogleButton onSuccess={() => navigate('/')} onError={setError} />
+            </div>
             <p className="mt-6 text-center text-sm text-fwm-muted">
                 {t.auth.hasAccount} {'  '}
                 <Link to="/dang-nhap" className="font-bold text-fwm-accent hover:underline">

@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const {OAuth2Client} = require(('google-auth-library'));
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const signToken = (user) =>
   jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -79,4 +81,32 @@ const toggleFavorite = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me, toggleFavorite };
+const googleAuth = async (req, res, next) => {
+  try{
+      const {credential} = req.body;
+      if (!credential) {
+        return res.status(400).json({message: 'Missing Google credential'});
+      }
+
+      const ticket = await googleClient.verifyIdToken({idToken: credential, audience: process.env.GOOGLE_CLIENT_ID,});
+      const payload = ticket.getPayload();
+      const {sub: googleId, email, name} = payload;
+
+      let user = await(User.findOne({$or: [{googleId}, {email}]}));
+      if (!user){
+        user = await(User.create({name, email, googleId}));
+      }
+      else if (!user.googleId){
+        user.googleId = googleId;
+        await user.save();
+      }
+
+      const token = signToken(user);
+      res.json({user, token});
+  }
+  catch(err){
+    next(err);
+  }
+}
+
+module.exports = { register, login, me, toggleFavorite, googleAuth};

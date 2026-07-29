@@ -11,3 +11,7 @@ export function register({name, email, password}){
 export function toggleFavorite({postId, token}){
     return apiRequest(`/auth/favorites/${postId}`,{method:'POST',token});
 }
+
+export function googleAuth(credential){
+    return apiRequest('/auth/google', {method: 'POST', body: {credential}});
+}

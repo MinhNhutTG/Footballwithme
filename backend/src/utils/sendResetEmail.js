@@ -2,7 +2,7 @@ const resend = require('../config/mailer')
 
 async function sendResetEmail(to, resetUrl) {
     await resend.emails.send({
-        from: 'FootballWithMe <onboarding@resend.dev>',
+        from: 'FootballWithMe <noreply@minhnhutsoftware.id.vn>',
         to,
         subject: 'Đặt lại mật khẩu - FootballWithMe',
         html: `

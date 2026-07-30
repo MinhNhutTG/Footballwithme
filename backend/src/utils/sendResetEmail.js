@@ -1,8 +1,8 @@
-const transporter = require('../config/mailer')
+const resend = require('../config/mailer')
 
 async function sendResetEmail(to, resetUrl) {
-    await transporter.sendMail({
-        from: `"FootballWithMe" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+        from: 'FootballWithMe <onboarding@resend.dev>',
         to,
         subject: 'Đặt lại mật khẩu - FootballWithMe',
         html: `

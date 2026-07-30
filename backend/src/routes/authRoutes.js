@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, me, toggleFavorite , googleAuth} = require('../controllers/authController');
+const { register, login, me, toggleFavorite , googleAuth, forgotPassword, resetPassword} = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimit');
 
@@ -10,5 +10,7 @@ router.post('/login', authLimiter, login);
 router.get('/me', protect, me);
 router.post('/favorites/:postId', protect, toggleFavorite);
 router.post('/google', authLimiter, googleAuth);
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password', authLimiter, resetPassword);
 
 module.exports = router;

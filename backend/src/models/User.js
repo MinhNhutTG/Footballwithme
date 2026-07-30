@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema(
     favorites: { type: [String], default: [] },
     bio: { type: String, default: '', trim: true, maxlength: 300 },
     avatarUrl: {type: String, default: ''},
+    resetPasswordToken: {type: String, default: undefined},
+    resetPasswordExpires: {type: Date, default: undefined},
     googleId: {type: String, default: undefined},
   },
   { timestamps: true }

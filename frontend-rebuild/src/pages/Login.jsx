@@ -51,6 +51,12 @@ function Login() {
                         className="w-full rounded-fwm border border-fwm-line bg-fwm-card px-4 py-3 text-fwm-text focus:border-fwm-accent focus:outline-none"
                     ></input>
                 </div>
+                <p className="text-right text-xs">
+                    <Link to="/quen-mat-khau" className="font-bold text-fwm-accent hover:underline">
+                        Quên mật khẩu?
+                    </Link>
+                </p>
+
                 {error && <p className="text-sm text-fwm-pink">{error}</p>}
                 <Button type="submit" variant="primary" className="w-full">{t.auth.submitLogin}</Button>
             </form>

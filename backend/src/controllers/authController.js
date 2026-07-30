@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const {OAuth2Client} = require(('google-auth-library'));
+const { OAuth2Client } = require(('google-auth-library'));
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const crypto = require('crypto');
+const sendResetEmail = require('../utils/sendResetEmail');
 
 const signToken = (user) =>
   jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -82,31 +84,81 @@ const toggleFavorite = async (req, res, next) => {
 };
 
 const googleAuth = async (req, res, next) => {
-  try{
-      const {credential} = req.body;
-      if (!credential) {
-        return res.status(400).json({message: 'Missing Google credential'});
-      }
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ message: 'Missing Google credential' });
+    }
 
-      const ticket = await googleClient.verifyIdToken({idToken: credential, audience: process.env.GOOGLE_CLIENT_ID,});
-      const payload = ticket.getPayload();
-      const {sub: googleId, email, name} = payload;
+    const ticket = await googleClient.verifyIdToken({ idToken: credential, audience: process.env.GOOGLE_CLIENT_ID, });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
 
-      let user = await(User.findOne({$or: [{googleId}, {email}]}));
-      if (!user){
-        user = await(User.create({name, email, googleId}));
-      }
-      else if (!user.googleId){
-        user.googleId = googleId;
-        await user.save();
-      }
+    let user = await (User.findOne({ $or: [{ googleId }, { email }] }));
+    if (!user) {
+      user = await (User.create({ name, email, googleId }));
+    }
+    else if (!user.googleId) {
+      user.googleId = googleId;
+      await user.save();
+    }
 
-      const token = signToken(user);
-      res.json({user, token});
+    const token = signToken(user);
+    res.json({ user, token });
+  }
+  catch (err) {
+    next(err);
+  }
+}
+
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (typeof email !== 'string' || !email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const user = await User.findOne({ email });
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+      user.resetPasswordToken = hashedToken;
+      user.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
+      await user.save();
+      const resultUrl = `${process.env.FRONTEND_URL}/dat-lai-mat-khau/${rawToken}`;
+      await sendResetEmail(user.email, resultUrl);
+    }
+    res.json({ message: 'Nếu email tồn tại trong hệ thống, link đặt lại mật khẩu đã được gửi.' });
+  }
+  catch (err) {
+    next(err);
+  }
+}
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+    }
+    user.password = password;
+    user.resetPasswordToken= undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: 'Đặt lại mật khẩu thành công' });
   }
   catch(err){
     next(err);
   }
 }
 
-module.exports = { register, login, me, toggleFavorite, googleAuth};
+module.exports = { register, login, me, toggleFavorite, googleAuth, forgotPassword, resetPassword };

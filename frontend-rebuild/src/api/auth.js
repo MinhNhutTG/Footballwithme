@@ -15,3 +15,11 @@ export function toggleFavorite({postId, token}){
 export function googleAuth(credential){
     return apiRequest('/auth/google', {method: 'POST', body: {credential}});
 }
+
+export function forgotPassword(email){
+    return apiRequest('/auth/forgot-password',{method: 'POST',body: {email}});
+}
+
+export function resetPassword(token, password){
+    return apiRequest('/auth/reset-password', {method: 'POST', body: {token, password}});
+}

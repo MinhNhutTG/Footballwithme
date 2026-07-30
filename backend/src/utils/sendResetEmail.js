@@ -1,0 +1,95 @@
+const transporter = require('../config/mailer')
+
+async function sendResetEmail(to, resetUrl) {
+    await transporter.sendMail({
+        from: `"FootballWithMe" <${process.env.EMAIL_USER}>`,
+        to,
+        subject: 'Đặt lại mật khẩu - FootballWithMe',
+        html: `
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Đặt lại mật khẩu</title>
+        </head>
+        <body style="margin:0; padding:0; background-color:#f2f4f7; font-family: 'Segoe UI', Arial, sans-serif;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2f4f7; padding:30px 0;">
+                <tr>
+                    <td align="center">
+                        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                            
+                            <!-- BANNER -->
+                            <tr>
+                                <td style="padding:0;">
+                                    <img
+                                        src="https://res.cloudinary.com/deumqjwte/image/upload/v1785398516/banner_m4zm5a.png"
+                                        alt="FootballWithMe"
+                                        width="600"
+                                        style="display:block; width:100%; max-width:600px; height:auto; border:0;"
+                                    />
+                                </td>
+                            </tr>
+
+                            <!-- NỘI DUNG -->
+                            <tr>
+                                <td style="padding:40px 40px 20px;">
+                                    <h2 style="margin:0 0 16px; color:#1a1a1a; font-size:20px;">Yêu cầu đặt lại mật khẩu</h2>
+                                    <p style="margin:0 0 16px; color:#4a4a4a; font-size:15px; line-height:1.6;">
+                                        Xin chào,
+                                    </p>
+                                    <p style="margin:0 0 24px; color:#4a4a4a; font-size:15px; line-height:1.6;">
+                                        Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <strong>FootballWithMe</strong> của bạn. Nhấn vào nút bên dưới để tạo mật khẩu mới.
+                                    </p>
+
+                                    <!-- BUTTON -->
+                                    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+                                        <tr>
+                                            <td style="border-radius:8px; background-color:#2e7d32;">
+                                                <a href="${resetUrl}" target="_blank" style="display:inline-block; padding:14px 36px; color:#ffffff; text-decoration:none; font-size:15px; font-weight:600; border-radius:8px;">
+                                                    Đặt lại mật khẩu
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <p style="margin:0 0 8px; color:#8a8a8a; font-size:13px; line-height:1.5; text-align:center;">
+                                        Hoặc copy đường link sau vào trình duyệt:
+                                    </p>
+                                    <p style="margin:0 0 24px; text-align:center; word-break:break-all;">
+                                        <a href="${resetUrl}" style="color:#2e7d32; font-size:13px;">${resetUrl}</a>
+                                    </p>
+
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fff8e1; border-radius:8px; margin-bottom:8px;">
+                                        <tr>
+                                            <td style="padding:14px 16px; color:#8a6d00; font-size:13px; line-height:1.5;">
+                                                ⏱️ Liên kết này sẽ <strong>hết hạn sau 30 phút</strong>. Nếu không phải bạn yêu cầu, vui lòng bỏ qua email này — mật khẩu của bạn sẽ không bị thay đổi.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <!-- FOOTER -->
+                            <tr>
+                                <td style="background-color:#f7f8fa; padding:24px 40px; text-align:center; border-top:1px solid #eaeaea;">
+                                    <p style="margin:0 0 6px; color:#9a9a9a; font-size:12px;">
+                                        © ${new Date().getFullYear()} FootballWithMe. All rights reserved.
+                                    </p>
+                                    <p style="margin:0; color:#b0b0b0; font-size:11px;">
+                                        Email này được gửi tự động, vui lòng không trả lời.
+                                    </p>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        `,
+    });
+}
+
+module.exports = sendResetEmail;

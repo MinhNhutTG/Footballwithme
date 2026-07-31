@@ -49,7 +49,9 @@ async function getMe(req, res, next) {
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
+    const data = user.toJSON();
+    data.hasPassword = !!user.password;
+    res.json(data);
   } catch (err) {
     next(err);
   }
@@ -72,4 +74,29 @@ async function updateMe(req, res, next) {
   }
 }
 
-module.exports = { list, updateRole, remove, getMe, updateMe };
+async function changePassword(req, res, next){
+    try{
+      const user = await User.findById(req.user.id);
+      if (!user) return res.status(404).json({message: 'User not found'});
+
+      const {currentPassword, newPassword} = req.body;
+      if (typeof newPassword !== 'string' || newPassword.length < 6){
+        return res.status(400).json({ message: 'New password must be at least 6 characters' });
+      }
+
+      if (user.password){
+        if (!currentPassword || !(await user.comparePassword(currentPassword))){
+          return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+      }
+
+      user.password = newPassword;
+      await user.save();
+      res.json({ message: 'Password updated successfully' });
+    } 
+    catch(err){
+      next(err);
+    }
+}
+
+module.exports = { list, updateRole, remove, getMe, updateMe, changePassword };

@@ -19,3 +19,7 @@ export function getMe(token){
 export function updateMe(data, token){
     return apiRequest('/users/me', {method: 'PUT', body: data, token});
 }
+
+export function changePassword(data, token){
+    return apiRequest('/users/change-password', {method: 'PUT', body: data, token});
+}

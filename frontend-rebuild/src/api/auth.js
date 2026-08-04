@@ -23,3 +23,11 @@ export function forgotPassword(email){
 export function resetPassword(token, password){
     return apiRequest('/auth/reset-password', {method: 'POST', body: {token, password}});
 }
+
+export function verifyEmail(token){
+    return apiRequest('/auth/verify-email', {method: 'POST', body: {token}});
+}
+
+export function resendVerification(email){
+    return apiRequest('/auth/resend-verification', {method: 'POST', body: {email}});
+}

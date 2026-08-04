@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLang } from '../context/LangContext'
 import Button from "../components/ui/Button";
 import GoogleButton from "../components/auth/GoogleButton";
+import { resendVerification } from '../api/auth';
 
 function Login() {
     const { t } = useLang();
@@ -12,16 +13,35 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassWord] = useState('');
     const [error, setError] = useState('');
+    const [unverifiedEmail, setUnverifiedEmail] = useState('');
+    const [resendMessage, setResendMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setUnverifiedEmail('');
+        setResendMessage('');
         try {
             await login(email, password);
             navigate('/');
         }
+        catch (err) {
+            if (err.code === 'EMAIL_NOT_VERIFIED') {
+                setUnverifiedEmail(email);
+            } else {
+                setError(t.auth.errorLogin);
+            }
+        }
+    }
+
+    const handleResend = async () => {
+        setResendMessage('');
+        try {
+            const res = await resendVerification(unverifiedEmail);
+            setResendMessage(res.message);
+        }
         catch {
-            setError(t.auth.errorLogin);
+            setResendMessage('Có lỗi xảy ra, thử lại sau.');
         }
     }
 
@@ -58,6 +78,19 @@ function Login() {
                 </p>
 
                 {error && <p className="text-sm text-fwm-pink">{error}</p>}
+                {unverifiedEmail && (
+                    <div className="rounded-fwm border border-fwm-line bg-fwm-card p-3 text-sm">
+                        <p className="text-fwm-pink">Email chưa được xác thực.</p>
+                        <button
+                            type="button"
+                            onClick={handleResend}
+                            className="mt-1 font-bold text-fwm-accent hover:underline"
+                        >
+                            Gửi lại email xác thực
+                        </button>
+                        {resendMessage && <p className="mt-1 text-emerald-400">{resendMessage}</p>}
+                    </div>
+                )}
                 <Button type="submit" variant="primary" className="w-full">{t.auth.submitLogin}</Button>
             </form>
             <div className="mt-6 flex items-center gap-3">

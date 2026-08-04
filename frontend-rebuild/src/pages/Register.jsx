@@ -14,13 +14,14 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
 
     const handleSumit = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            await register(name, email, password);
-            navigate("/");
+            const res = await register(name, email, password);
+            setMessage(res.message);
         }
         catch {
             setError(t.auth.errorRegister);
@@ -74,6 +75,7 @@ function Register() {
                 </div>
 
                 {error && <p className="text-sm text-fwm-pink"> {error} </p>}
+                {message && <p className="text-sm text-emerald-400">{message}</p>}
 
                 <Button variant="primary" className="w-full" type="submit">
                     {t.auth.submitRegister}

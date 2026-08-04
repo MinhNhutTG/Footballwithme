@@ -15,6 +15,7 @@ import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 function App() {
   return (
     <Routes>
@@ -34,6 +35,7 @@ function App() {
         <Route path='/ho-so' element={<Profile/>} />
         <Route path="/quen-mat-khau" element={<ForgotPassword/>}/>
         <Route path="/dat-lai-mat-khau/:token" element={<ResetPassword/>}/>
+        <Route path="/xac-thuc-email/:token" element={<VerifyEmail/>}/>
         <Route path='*' element={<NotFound/>}></Route>
       </Route>
     </Routes>

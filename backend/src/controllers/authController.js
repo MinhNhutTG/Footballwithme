@@ -4,6 +4,8 @@ const { OAuth2Client } = require(('google-auth-library'));
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const crypto = require('crypto');
 const sendResetEmail = require('../utils/sendResetEmail');
+const sendVerificationEmail = require('../utils/sendVerificationEmail');
+
 
 const signToken = (user) =>
   jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -28,8 +30,15 @@ const register = async (req, res, next) => {
     }
 
     const user = await User.create({ name, email, password });
-    const token = signToken(user);
-    res.status(201).json({ user, token });
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    user.verificationToken = hashedToken;
+    user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+    await user.save();
+    const verificationUrl = `${process.env.FRONTEND_URL}/xac-thuc-email/${rawToken}`;
+    await sendVerificationEmail(user.email, verificationUrl);
+
+    res.status(201).json({ message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập.' });
   } catch (err) {
     next(err);
   }
@@ -45,6 +54,10 @@ const login = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Vui lòng xác thực email trước khi đăng nhập', code: 'EMAIL_NOT_VERIFIED' });
     }
 
     const token = signToken(user);
@@ -96,10 +109,11 @@ const googleAuth = async (req, res, next) => {
 
     let user = await (User.findOne({ $or: [{ googleId }, { email }] }));
     if (!user) {
-      user = await (User.create({ name, email, googleId }));
+      user = await (User.create({ name, email, googleId, isVerified: true }));
     }
     else if (!user.googleId) {
       user.googleId = googleId;
+      user.isVerified = true;
       await user.save();
     }
 
@@ -150,15 +164,68 @@ const resetPassword = async (req, res, next) => {
       return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
     }
     user.password = password;
-    user.resetPasswordToken= undefined;
+    user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
 
     res.json({ message: 'Đặt lại mật khẩu thành công' });
   }
-  catch(err){
+  catch (err) {
     next(err);
   }
 }
 
-module.exports = { register, login, me, toggleFavorite, googleAuth, forgotPassword, resetPassword };
+const verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    res.json({ message: 'Xác thực email thành công, bạn có thể đăng nhập.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const resendVerification = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (typeof email !== 'string' || !email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (user && !user.isVerified) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+      user.verificationToken = hashedToken;
+      user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+      await user.save();
+
+      const verifyUrl = `${process.env.FRONTEND_URL}/xac-thuc-email/${rawToken}`;
+      await sendVerificationEmail(user.email, verifyUrl);
+    }
+
+    res.json({ message: 'Nếu email tồn tại và chưa xác thực, link xác thực mới đã được gửi.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { register, login, me, toggleFavorite, googleAuth, forgotPassword, resetPassword, verifyEmail, resendVerification};

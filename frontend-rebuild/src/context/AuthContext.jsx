@@ -37,10 +37,7 @@ export function AuthProvider({ children }) {
 
     const login = async (email, password) => persist(await loginRequest({email, password}));
 
-    const register = async (name, email, password) =>{
-        const data = await RegisterRequest({name, email, password});
-        return persist(data);
-    }
+    const register = async (name, email, password) => RegisterRequest({name, email, password});
 
     const loginWithGoogle = async (credential) => persist(await googleAuthRequest(credential));
 

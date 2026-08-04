@@ -1,5 +1,7 @@
 # Module: Quên mật khẩu (Fullstack — Nodemailer + Gmail App Password)
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-07-30).** Provider email đã đổi từ Nodemailer/Gmail (mô tả trong spec gốc bên dưới) sang **Resend** ngay sau khi module "xong" — `config/mailer.js` export client `Resend`, biến env là `RESEND_API_KEY` (không phải `EMAIL_USER`/`EMAIL_APP_PASSWORD`). Sender: `FootballWithMe <noreply@minhnhutsoftware.id.vn>`. Hạ tầng Resend này được tái sử dụng nguyên cho module Xác thực email (`EMAIL_VERIFICATION_MODULE.md`).
+
 Module fullstack thứ 3 (sau Auth/Posts/Comments/Profile có sẵn và Upload ảnh/video Cloudinary). Backend **chưa có** cơ chế gửi email nào (`nodemailer` chưa cài) — phải xây từ đầu, tương tự cách Upload module từng xây pipeline Cloudinary từ đầu.
 
 Đã chốt: dùng **Nodemailer qua SMTP Gmail + App Password** (không dùng service email chuyên dụng như SendGrid/Resend để đơn giản, phù hợp project học tập).

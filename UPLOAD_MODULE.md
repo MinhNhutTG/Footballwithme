@@ -1,5 +1,7 @@
 # Module: Upload Ảnh & Video (Fullstack — Cloudinary)
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-07-28).** Cả Phần 1 (avatar) và Phần 2 (ảnh bìa/video bài viết) đã code và test xong. Xem `README.md` (API `/upload`) và mục "Media" trong bảng tech stack.
+
 Module đầu tiên theo hướng **fullstack theo tính năng** (không còn học React thuần theo `REACT_ROADMAP.md`). Khác với Profile/Comments trước đây (backend đã có sẵn, chỉ viết frontend), module này **backend chưa tồn tại — phải xây từ đầu** cùng với frontend.
 
 ---

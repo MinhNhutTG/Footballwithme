@@ -2,7 +2,7 @@
 
 # FootballWithMe
 
-Full-stack football news platform — articles, search, favorites, comments, and an admin dashboard for content management.
+Full-stack football news platform — articles, search, favorites, comments, media uploads, and an admin dashboard for content management.
 
 [![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-Express%205-339933?logo=node.js&logoColor=white)](https://expressjs.com)
@@ -38,8 +38,9 @@ FootballWithMe is a full-stack content platform for football news, built as a Re
 | Content | Browse articles by category, view article detail pages |
 | Search | Full-text search across articles |
 | Engagement | Favorite articles, post comments |
-| Auth | JWT-based registration and login |
-| Admin | Dedicated dashboard to manage posts, categories, and comments |
+| Auth | JWT-based registration/login, Google Sign-In, email verification, forgot/reset password, change password |
+| Media | Avatar, cover image, and video uploads via Cloudinary |
+| Admin | Dedicated dashboard to manage posts, categories, comments, and users |
 | i18n | Multi-language UI support |
 
 ## Tech Stack
@@ -60,7 +61,9 @@ FootballWithMe is a full-stack content platform for football news, built as a Re
 |---|---|
 | Runtime | Node.js, Express 5 |
 | Database | MongoDB, Mongoose |
-| Auth | JWT, bcrypt |
+| Auth | JWT, bcrypt, Google Identity Services (`google-auth-library`) |
+| Media storage | Cloudinary, Multer |
+| Email | Resend (verification, password reset) |
 | Security | Helmet, express-rate-limit, sanitize-html |
 
 **Infrastructure**
@@ -86,9 +89,11 @@ footballwithme/
 ├── backend/                 # REST API
 │   └── src/
 │       ├── models/          # User, Post, Comment
-│       ├── routes/          # auth, posts, users, comments
-│       ├── middleware/       # auth guard, error handler
-│       └── config/          # DB connection
+│       ├── routes/          # auth, posts, users, comments, upload
+│       ├── controllers/      # business logic per resource
+│       ├── middleware/       # auth guard, upload (Multer), rate limit, error handler
+│       ├── utils/            # sendResetEmail, sendVerificationEmail
+│       └── config/          # DB connection, Cloudinary, Resend mailer
 ├── frontend-rebuild/         # Active frontend
 │   └── src/
 │       ├── pages/           # Home, Category, ArticleDetail, Admin, ...
@@ -135,13 +140,25 @@ The frontend reads the API base URL from `VITE_API_URL` in `frontend-rebuild/.en
 | `MONGO_URI` | MongoDB connection string |
 | `JWT_SECRET` | Secret used to sign JWTs |
 | `PORT` | Server port (default `5000`) |
+| `NODE_ENV` | `development` / `production` |
 | `CORS_ORIGIN` | Allowed frontend origin(s) |
+| `FRONTEND_URL` | Frontend base URL, used to build email verification / password reset links |
+| `GOOGLE_CLIENT_ID` | OAuth Client ID used to verify Google Sign-In tokens |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `RESEND_API_KEY` | API key for Resend (transactional email) |
+
+> `dotenv.config()` must run before any module that reads `process.env` at import time (e.g. `config/cloudinary.js`, `config/mailer.js`) — in `server.js` it is the first line for this reason.
 
 **`frontend-rebuild/.env`**
 
 | Variable | Description |
 |---|---|
 | `VITE_API_URL` | Base URL of the backend API |
+| `VITE_GOOGLE_CLIENT_ID` | OAuth Client ID for the Google Sign-In button (same value as backend's `GOOGLE_CLIENT_ID`) |
+
+> Vite only reads `.env` at dev-server startup and inlines `VITE_*` vars at build time — restart `npm run dev` / trigger a new build after changing them.
 
 ## API Reference
 
@@ -150,11 +167,35 @@ Base URL: `/api`
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/health` | Health check |
-| `POST` | `/auth/register` | Register a new user |
-| `POST` | `/auth/login` | Authenticate and receive a JWT |
+| **Auth** | | |
+| `POST` | `/auth/register` | Register a new user (sends email verification link, no auto-login) |
+| `POST` | `/auth/login` | Authenticate and receive a JWT (blocked until email is verified) |
+| `POST` | `/auth/google` | Sign in / sign up with a Google ID token |
+| `GET` | `/auth/me` | Get the current authenticated user |
+| `POST` | `/auth/favorites/:postId` | Toggle a post as favorite |
+| `POST` | `/auth/verify-email` | Verify an account via emailed token |
+| `POST` | `/auth/resend-verification` | Resend the verification email |
+| `POST` | `/auth/forgot-password` | Request a password reset email |
+| `POST` | `/auth/reset-password` | Reset password using the emailed token |
+| **Users** | | |
+| `GET` | `/users/me` | Get the current user's profile |
+| `PUT` | `/users/me` | Update name / bio / avatar |
+| `PUT` | `/users/change-password` | Change password (current password required unless the account has none yet, e.g. Google-only) |
+| `GET` | `/users` | List all users *(admin)* |
+| `PUT` | `/users/:id/role` | Update a user's role *(admin)* |
+| `DELETE` | `/users/:id` | Delete a user *(admin)* |
+| **Posts** | | |
 | `GET` | `/posts` | List posts |
-| `GET` | `/users` | User resources |
-| `GET/POST` | `/comments` | List / create comments |
+| `GET` | `/posts/:id` | Get a single post |
+| `POST` | `/posts` | Create a post *(admin)* |
+| `PUT` | `/posts/:id` | Update a post *(admin)* |
+| `DELETE` | `/posts/:id` | Delete a post *(admin)* |
+| **Comments** | | |
+| `GET` | `/comments` | List comments |
+| `POST` | `/comments` | Create a comment |
+| `DELETE` | `/comments/:id` | Delete a comment |
+| **Upload** | | |
+| `POST` | `/upload` | Upload an image/video file to Cloudinary, returns its URL |
 
 ## Deployment
 

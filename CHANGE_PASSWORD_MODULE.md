@@ -1,5 +1,7 @@
 # Module: Đổi mật khẩu (khi đã đăng nhập)
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-07-31).**
+
 Module fullstack tiếp theo sau Forgot/Reset Password (xem `FORGOT_PASSWORD_MODULE.md`). Khác biệt quan trọng: đây là hành động của user **đã đăng nhập** (dùng token JWT hiện có, không cần email/token reset), đặt trong trang `Profile.jsx` — không phải luồng "quên mật khẩu" qua email.
 
 ---

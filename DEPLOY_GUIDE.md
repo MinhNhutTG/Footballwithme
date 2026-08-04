@@ -26,7 +26,7 @@ Deploy chạy dựa trên GitHub, nên trước hết code phải được commi
 ```bash
 git add <các file muốn commit>
 git commit -m "..."
-git push origin master
+git push origin main
 ```
 
 > Lưu ý: `.env` đã nằm trong `.gitignore` — không bao giờ commit file này (chứa `MONGO_URI`, `JWT_SECRET` thật). Repo chỉ cần `.env.example` làm mẫu.
@@ -64,7 +64,7 @@ Repo đã có `render.yaml` ở thư mục gốc, khai báo sẵn:
 - `rootDir: backend`
 - `buildCommand: npm install`
 - `startCommand: npm start`
-- Các biến môi trường cần nhập tay: `MONGO_URI`, `JWT_SECRET`, `CORS_ORIGIN`
+- Các biến môi trường cần nhập tay: `MONGO_URI`, `JWT_SECRET`, `CORS_ORIGIN`, `FRONTEND_URL`, `GOOGLE_CLIENT_ID`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `RESEND_API_KEY`
 
 **Các bước:**
 
@@ -78,6 +78,10 @@ Repo đã có `render.yaml` ở thư mục gốc, khai báo sẵn:
      openssl rand -hex 32
      ```
    - `CORS_ORIGIN` = tạm thời điền `http://localhost:5174` (sẽ sửa lại đúng ở Bước 5, sau khi có URL Vercel thật)
+   - `FRONTEND_URL` = tạm thời điền `http://localhost:5174` (sẽ sửa lại đúng ở Bước 5 cùng lúc với `CORS_ORIGIN` — dùng để tạo link xác thực email / đặt lại mật khẩu)
+   - `GOOGLE_CLIENT_ID` = OAuth Client ID lấy từ [Google Cloud Console](https://console.cloud.google.com/apis/credentials) (mục "OAuth 2.0 Client IDs")
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` = lấy từ Cloudinary Dashboard (cloudinary.com)
+   - `RESEND_API_KEY` = API key tạo tại [resend.com](https://resend.com), dùng để gửi email xác thực/đặt lại mật khẩu
 5. Bấm **Apply/Create** → Render build và deploy tự động (mất khoảng 2-5 phút).
 6. Sau khi deploy xong, Render cấp 1 URL dạng:
    ```
@@ -105,6 +109,7 @@ Repo đã có `render.yaml` ở thư mục gốc, khai báo sẵn:
    - **Output Directory**: mặc định `dist` — giữ nguyên.
 5. Mở phần **Environment Variables**, thêm:
    - `VITE_API_URL` = `https://footballwithme-backend.onrender.com/api` (URL Render thật từ Bước 2, nhớ thêm `/api` ở cuối)
+   - `VITE_GOOGLE_CLIENT_ID` = cùng giá trị `GOOGLE_CLIENT_ID` đã điền ở Bước 2 (bắt buộc để nút đăng nhập Google hiển thị)
 6. Bấm **Deploy**, chờ khoảng 1-2 phút.
 7. Sau khi xong, Vercel cấp 1 URL dạng:
    ```
@@ -115,15 +120,16 @@ Repo đã có `render.yaml` ở thư mục gốc, khai báo sẵn:
 
 ## Bước 4 — Nối lại CORS giữa 2 domain thật
 
-Ở Bước 2 mình tạm để `CORS_ORIGIN = http://localhost:5174` — giờ cần sửa lại URL Vercel thật:
+Ở Bước 2 mình tạm để `CORS_ORIGIN` và `FRONTEND_URL` = `http://localhost:5174` — giờ cần sửa lại URL Vercel thật:
 
 1. Quay lại Render dashboard → chọn service `footballwithme-backend` → tab **Environment**.
-2. Sửa biến `CORS_ORIGIN` = URL Vercel thật từ Bước 3.7, ví dụ:
+2. Sửa cả 2 biến `CORS_ORIGIN` và `FRONTEND_URL` = URL Vercel thật từ Bước 3.7, ví dụ:
    ```
    https://footballwithme-xxxx.vercel.app
    ```
    (không thêm dấu `/` ở cuối)
-3. Save → Render tự động redeploy lại backend với giá trị mới (~1-2 phút).
+3. Nhớ thêm domain Vercel thật vào **Authorized JavaScript origins** trong Google Cloud Console (mục tạo `GOOGLE_CLIENT_ID`) — thiếu bước này thì Google Sign-In sẽ báo lỗi origin không hợp lệ trên production dù chạy được ở `localhost`.
+4. Save → Render tự động redeploy lại backend với giá trị mới (~1-2 phút).
 
 ---
 
@@ -134,7 +140,11 @@ Vào URL Vercel thật, test lần lượt:
 | Chức năng | Cách test |
 |---|---|
 | Trang chủ tải bài viết | Vào `/`, thấy danh sách bài viết |
-| Đăng ký / đăng nhập | Tạo tài khoản mới, đăng nhập lại |
+| Đăng ký / xác thực email | Tạo tài khoản mới, kiểm tra mail nhận được, bấm link `/xac-thuc-email/:token`, đăng nhập lại thành công |
+| Đăng nhập Google | Bấm nút Google, đăng nhập/đăng ký thành công |
+| Quên mật khẩu | `/quen-mat-khau` → nhận mail → `/dat-lai-mat-khau/:token` → đặt mật khẩu mới → đăng nhập lại |
+| Đổi mật khẩu | Đăng nhập, vào `/ho-so`, đổi mật khẩu khi đã biết mật khẩu hiện tại |
+| Upload ảnh | Đổi avatar ở `/ho-so`, thêm ảnh bìa/video cho 1 bài viết trong Admin |
 | Admin | Đăng nhập bằng tài khoản có `role: admin`, vào `/admin`, thêm/sửa/xoá 1 bài |
 | Comment | Vào 1 bài viết, bình luận, thấy hiện ngay |
 | Search / Favorites | Tìm kiếm, lọc chuyên mục, yêu thích 1 bài |
@@ -174,4 +184,4 @@ Vì `/admin` yêu cầu `role: admin`, mà đăng ký thường chỉ tạo `rol
 - **Lỗi CORS**: `CORS_ORIGIN` trên Render phải khớp domain Vercel 100% (không dư `/`, đúng `https://`).
 - **MongoDB connection error trên Render logs**: kiểm tra lại `MONGO_URI` có đúng username/password, và Network Access trên Atlas đã allow `0.0.0.0/0`.
 - **Refresh trang con (`/bai-viet/123`) bị 404 trên Vercel**: kiểm tra `frontend-rebuild/vercel.json` có đúng rewrite rule `"source": "/(.*)", "destination": "/index.html"`.
-- **Đổi code xong không thấy cập nhật trên Vercel/Render**: cả 2 dịch vụ tự động redeploy mỗi khi có commit mới push lên nhánh `master` — nhớ push code lên GitHub trước.
+- **Đổi code xong không thấy cập nhật trên Vercel/Render**: cả 2 dịch vụ tự động redeploy mỗi khi có commit mới push lên nhánh `main` — nhớ push code lên GitHub trước.

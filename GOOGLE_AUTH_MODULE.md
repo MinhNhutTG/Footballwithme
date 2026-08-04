@@ -1,5 +1,7 @@
 # Module: Đăng nhập/Đăng ký bằng Google (Google Identity Services)
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-07-29).** Lưu ý: từ module Xác thực email (2026-08-04), tài khoản tạo/liên kết qua Google được set thẳng `isVerified: true`, không cần xác thực email riêng.
+
 Làm **trước** module "Quên mật khẩu" (đổi ý theo yêu cầu 2026-07-28) — spec quên mật khẩu đã viết sẵn ở `FORGOT_PASSWORD_MODULE.md`, quay lại làm sau khi module này xong.
 
 Đã chốt 2 quyết định kiến trúc:

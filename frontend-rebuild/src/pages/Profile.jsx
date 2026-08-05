@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { useLang } from '../context/LangContext'
 import { uploadFile } from "../api/upload";
 import { changePassword } from "../api/users";
+import { deleteAccount } from "../api/users";
 
 function profileReducer(state, action) {
     switch (action.type) {
@@ -28,7 +29,7 @@ function profileReducer(state, action) {
 
 
 function Profile() {
-    const { user, token, updateUser } = useAuth();
+    const { user, token, updateUser, logout } = useAuth();
     const { t } = useLang();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -38,6 +39,11 @@ function Profile() {
     const [pwError, setPwError] = useState('');
     const [pwSuccess, setPwSuccess] = useState(false);
     const [pwLoading, setPwLoading] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deletePassword, setDeletePassword] = useState('');
+    const [deleteError, setDeleteError] = useState('');
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
     const [state, dispatch] = useReducer(profileReducer, {
         name: user?.name || '',
         bio: user?.bio || '',
@@ -110,11 +116,28 @@ function Profile() {
             setNewPassword('');
             setConfirmPassword('');
         }
-        catch(err){
+        catch (err) {
             setPwError(err.message);
         }
-        finally{
+        finally {
             setPwLoading(false);
+        }
+    }
+
+    const handleDeleteAccount = async (e) => {
+        e.preventDefault();
+        setDeleteError('');
+        setDeleteLoading(true);
+        try{
+            await deleteAccount({password: user.hasPassword ? deletePassword : undefined}, token);  
+            logout();
+            navigate('/', { replace: true });
+        }
+        catch (err){
+            setDeleteError(err.message);
+        }
+        finally{
+            setDeleteLoading(false);
         }
     }
 
@@ -221,6 +244,53 @@ function Profile() {
                         </Button>
 
                     </form>
+                </div>
+                <div className="mt-12 border-t border-fwm-line pt-8">
+                    <h2 className="font-head text-lg font-black text-fwm-pink">Vùng nguy hiểm</h2>
+                    <p className="mt-2 text-sm text-fwm-muted">
+                        Xoá tài khoản sẽ xoá vĩnh viễn thông tin cá nhân và toàn bộ bình luận của bạn. Hành động này không thể hoàn tác.
+                    </p>
+                    {!showDeleteConfirm ? (
+                        <Button type="button" variant="ghost" className="mt-4 border-fwm-pink text-fwm-pink hover:bg-fwm-pink/10" onClick={() => setShowDeleteConfirm(true)} >
+                            Xoá tài khoản
+                        </Button>
+                    ) : (
+                        <form onSubmit={handleDeleteAccount} className="mt-4 space-y-4 rounded-fwm border border-fwm-pink/40 p-4">
+                            {user.hasPassword ? (<>
+                                <div>
+                                    <label htmlFor="delete-password" className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">
+                                        Nhập mật khẩu để xác nhận
+                                    </label>
+                                    <input
+                                        required
+                                        id="delete-password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        value={deletePassword}
+                                        onChange={(e) => setDeletePassword(e.target.value)}
+                                        className="w-full rounded-fwm border border-fwm-line bg-fwm-card px-4 py-3 text-fwm-text focus:border-fwm-pink focus:outline-none"
+                                    ></input>
+                                </div>
+                            </>) : (
+                                <p className="text-sm text-fwm-pink">
+                                    Bấm "Tôi hiểu, xoá vĩnh viễn" để xoá tài khoản ngay lập tức. Hành động này không thể hoàn tác.
+                                </p>
+                            )}
+                            {deleteError && <p className="text-sm text-fwm-pink">{deleteError}</p>}
+                            <div className="flex gap-3">
+                                <Button type="submit" variant="ghost" className="border-fwm-pink text-fwm-pink hover:bg-fwm-pink/10" disabled={deleteLoading}>
+                                    {deleteLoading ? 'Đang xoá...' : (user.hasPassword ? 'Xác nhận xoá tài khoản' : 'Tôi hiểu, xoá vĩnh viễn')}
+                                </Button>
+                                <Button type="button" variant="ghost" onClick={()=>{
+                                    setShowDeleteConfirm(false);
+                                    setDeletePassword('');
+                                    setDeleteError('');
+                                }} >
+                                    Hủy
+                                </Button>
+                            </div>
+                        </form>
+                    )}
                 </div>
                 {state.error && <p className="mt-3 text-sm text-fwm-pink">{state.error}</p>}
                 {state.success && <p className="mt-3 text-sm text-emerald-400">{t.profile.saved}</p>}

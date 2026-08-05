@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Comment = require('../models/Comment');
 
 async function list(req, res, next) {
   try {
@@ -59,13 +60,13 @@ async function getMe(req, res, next) {
 
 async function updateMe(req, res, next) {
   try {
-    const { name, bio , avatarUrl} = req.body;
+    const { name, bio, avatarUrl } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Name is required' });
     }
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name: name.trim(), bio: (bio || '').trim(),  ...(avatarUrl !== undefined && {avatarUrl})},
+      { name: name.trim(), bio: (bio || '').trim(), ...(avatarUrl !== undefined && { avatarUrl }) },
       { new: true, runValidators: true }
     );
     res.json(user);
@@ -74,29 +75,48 @@ async function updateMe(req, res, next) {
   }
 }
 
-async function changePassword(req, res, next){
-    try{
-      const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({message: 'User not found'});
+async function changePassword(req, res, next) {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-      const {currentPassword, newPassword} = req.body;
-      if (typeof newPassword !== 'string' || newPassword.length < 6){
-        return res.status(400).json({ message: 'New password must be at least 6 characters' });
-      }
-
-      if (user.password){
-        if (!currentPassword || !(await user.comparePassword(currentPassword))){
-          return res.status(401).json({ message: 'Current password is incorrect' });
-        }
-      }
-
-      user.password = newPassword;
-      await user.save();
-      res.json({ message: 'Password updated successfully' });
-    } 
-    catch(err){
-      next(err);
+    const { currentPassword, newPassword } = req.body;
+    if (typeof newPassword !== 'string' || newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
     }
+
+    if (user.password) {
+      if (!currentPassword || !(await user.comparePassword(currentPassword))) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
+      }
+    }
+
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Password updated successfully' });
+  }
+  catch (err) {
+    next(err);
+  }
 }
 
-module.exports = { list, updateRole, remove, getMe, updateMe, changePassword };
+async function deleteMe(req, res, next) {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.password){
+      const {password} = req.body;
+      if (!password || !(await user.comparePassword(password))){
+        return res.status(401).json({ message: 'Password is incorrect' });
+      }
+    }
+    await Comment.deleteMany({author: user._id});
+    await User.findByIdAndDelete(user._id);
+    res.json({success: true});
+  }
+  catch (err){
+    next(err);
+  }
+}
+
+module.exports = { list, updateRole, remove, getMe, updateMe, changePassword, deleteMe };

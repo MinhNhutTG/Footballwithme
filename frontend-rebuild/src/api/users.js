@@ -23,3 +23,7 @@ export function updateMe(data, token){
 export function changePassword(data, token){
     return apiRequest('/users/change-password', {method: 'PUT', body: data, token});
 }
+
+export function deleteAccount(data, token){
+    return apiRequest('/users/me' , {method: 'DELETE', body: data, token});
+}

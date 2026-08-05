@@ -7,6 +7,8 @@ import PopularItem from '../components/article/PopularItem'
 import ArticleCard from '../components/article/ArticleCard'
 import CommentSection from '../components/comment/CommentSection'
 import ErrorBoundary from '../components/common/ErrorBoundary'
+import { viewPost } from '../api/posts'
+import { useEffect, useState } from 'react'
 function ArticleDetail({ articleId }) {
     const { id } = useParams();
     const { posts, loading } = usePosts();
@@ -14,6 +16,14 @@ function ArticleDetail({ articleId }) {
     const { isFavorite, toggleFavorites } = useFavorites();
 
     const article = posts.find((p) => p.id === id);
+    const [views, setViews] = useState(article?.views || 0);
+    useEffect(() => {
+        if (!article) return;
+        setViews(article.views);
+        viewPost(article.id)
+            .then((res) => setViews(res.views))
+            .catch(() => { })
+    }, [article?.id])
     if (!article) {
         if (loading) return null;
         return (
@@ -27,7 +37,7 @@ function ArticleDetail({ articleId }) {
     }
     const isSkill = article.category === 'skill';
     const liked = isFavorite(article.id);
-    const popular = posts.slice(0, 5);
+    const popular = [...posts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
     const related = posts.filter((a) => a.category === article.category && a.id !== article.id).slice(0, 3);
 
     return (
@@ -48,6 +58,9 @@ function ArticleDetail({ articleId }) {
                                 {tag}
                             </span>
                         ))}
+                        <span className="text-xs font-bold text-white/70">
+                            {views ?? 0} lượt xem
+                        </span>
                         <button
                             type="button"
                             onClick={() => toggleFavorites(article.id)}

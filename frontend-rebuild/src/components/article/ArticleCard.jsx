@@ -38,8 +38,12 @@ function ArticleCard({ article }) {
                     {liked ? '♥' : '♡'}
                 </button>
             </div>
+            
             <p className="mt-1.5 line-clamp-2 text-sm text-fwm-muted">
                 {article.excerpt[lang]}
+            </p>
+            <p className="mt-2 text-xs text-fwm-muted">
+                {article.views ?? 0} lượt xem
             </p>
         </article>
 

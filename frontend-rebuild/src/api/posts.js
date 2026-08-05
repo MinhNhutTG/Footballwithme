@@ -28,3 +28,7 @@ export  async function updatePost(id, data, token){
 export async function deletePost(id,token){
     return apiRequest(`/posts/${id}`, {method: 'DELETE', token});
 }
+
+export async function viewPost(id){
+    return apiRequest(`/posts/${id}/view`, {method: 'POST'});
+}

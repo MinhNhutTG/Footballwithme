@@ -34,6 +34,7 @@ const postSchema = new mongoose.Schema(
     steps: { type: [stepSchema], default: [] },
     coverImageUrl: {type: String, default: ''},
     videoUrl: {type: String, default: ''},
+    views: {type: Number, default: 0},
   },
   { timestamps: true }
 );

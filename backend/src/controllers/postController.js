@@ -56,4 +56,16 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { list, getById, create, update, remove };
+async function incrementViews(req, res, next) {
+  try {
+    const post = await Post.findByIdAndUpdate(req.params.id,
+      { $inc: { views: 1 } }, { new: true });
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+    res.json({ views: post.views });
+
+  }
+  catch (err) {
+    next(err);
+  }
+}
+module.exports = { list, getById, create, update, remove, incrementViews };

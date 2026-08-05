@@ -1,5 +1,7 @@
 # Module: Lượt xem bài viết + "Phổ biến" tính thật
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-08-06).** Ghi chú: ở dev, `StrictMode` khiến `useEffect` double-invoke nên mỗi lượt xem test tay bị +2 thay vì +1 — đã xác nhận đây là hành vi StrictMode-only (không xảy ra ở production build), chủ động không thêm guard chặn vì chỉ là chỉ số tham khảo.
+
 Module fullstack tiếp theo sau Phân trang Admin (`ADMIN_PAGINATION_MODULE.md`, ✅ xong). Mục tiêu: tính năng hướng tới người dùng để tạo "social proof" (thấy bài đang được nhiều người đọc → tò mò bấm vào), đồng thời sửa đúng chỗ đang giả hiện tại — sidebar "Phổ biến" ở `Category.jsx` và `ArticleDetail.jsx` hiện chỉ lấy 5 bài đầu tiên trong mảng (`posts.slice(0, 5)`), không dựa trên bất kỳ số liệu thật nào.
 
 Module thứ 2 trong cặp module "thu hút người dùng" đã bàn — module còn lại (Like/Dislike/Haha/Giận dữ bằng icon cartoon AI-generated) làm **sau**, xem ghi chú ở cuối file.

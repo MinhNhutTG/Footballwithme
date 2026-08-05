@@ -1,6 +1,6 @@
 # Module: Xoá tài khoản (Delete Account)
 
-> **✅ Trạng thái: đã code đủ 2 bước (2026-08-05), đã commit & push (`94594e5`), nhưng CHƯA test luồng thật** (xoá tài khoản có password, xoá tài khoản Google thuần, và mở bài viết có comment của user đã xoá để kiểm tra cascade không crash).
+> **✅ Trạng thái: đã hoàn thành và verify (2026-08-06).** Đã fix bug route order (`DELETE /users/me` bị `/:id` (adminOnly) bắt nhầm, báo "Admin access required" — xem commit `51e0d75`). Đã test luồng thật.
 
 Module fullstack tiếp theo sau Xác thực email (`EMAIL_VERIFICATION_MODULE.md`), khép lại nhóm module Auth/Profile. Đặt trong `Profile.jsx`, dưới khối "Đổi mật khẩu" (`CHANGE_PASSWORD_MODULE.md`) — cùng trang, không phải trang riêng.
 

@@ -1,6 +1,6 @@
 # Module: Xác thực email khi đăng ký
 
-> **✅ Trạng thái: đã code đủ 4 bước (2026-08-04), đã commit & push (`2d873c5`), nhưng CHƯA test luồng thật và CHƯA chạy migration ân xá user cũ** (`db.users.updateMany({}, {$set:{isVerified:true}})`) — bắt buộc chạy migration trước khi test đăng nhập, nếu không mọi user cũ sẽ bị chặn.
+> **✅ Trạng thái: đã hoàn thành và verify (2026-08-06).** Đã chạy migration ân xá user cũ và test luồng thật (đăng ký → nhận mail → verify → login).
 
 Module fullstack tiếp theo sau Forgot/Reset Password. Tái dùng nguyên hạ tầng gửi mail **Resend** vừa chuyển sang (`config/mailer.js` đã sẵn `RESEND_API_KEY`) — module này **không cần cài thêm package hay setup .env mới**.
 

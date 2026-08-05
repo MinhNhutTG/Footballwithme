@@ -28,6 +28,7 @@ function toFormValues(post) {
         videoUrl: post.videoUrl || '',
     };
 }
+const POSTS_PER_PAGE = 6;
 
 function Admin() {
     const [section, setSection] = useState('posts');
@@ -40,6 +41,10 @@ function Admin() {
     const [postSearch, setPostSearch] = useState('');
     const [postCategoryFilter, setPostCategoryFilter] = useState('all');
     const [postSort, setPostSort] = useState({ key: null, dir: 'asc' });
+    // pagination state
+    const [postPage, setPostPage] = useState(1);
+
+
     const { refetch: refetchPublicPosts } = usePosts();
 
     useEffect(() => {
@@ -48,6 +53,10 @@ function Admin() {
         fetchPosts()
             .then(setPosts).catch((err) => setError(err.message)).finally(() => setLoading(false))
     }, [isAdmin])
+
+    useEffect(() => {
+        setPostPage(1);
+    }, [postSearch, postCategoryFilter, postSort])
 
     const handleNew = () => { setEditingId(null); setView('new'); };
 
@@ -129,6 +138,11 @@ function Admin() {
         return list;
     }, [posts, postSearch, postCategoryFilter, postSort]);
 
+    const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE));
+    const pagedPosts = useMemo(() => visiblePosts.slice((postPage - 1) * POSTS_PER_PAGE, postPage * POSTS_PER_PAGE), [visiblePosts, postPage]);
+    useEffect(() => {
+        if (postPage > totalPages) setPostPage(totalPages);
+    }, [postPage, totalPages]);
     const editingPost = posts.find((p) => p.id === editingId);
 
 
@@ -198,24 +212,51 @@ function Admin() {
                                                 </select>
                                             </div>
                                             {visiblePosts.length === 0 ? (<p className="text-fwm-muted">Không tìm thấy kết quả phù hợp.</p>) : (
-                                                <div className="overflow-x-auto rounded-fwm-lg border border-fwm-line bg-fwm-card p-4">
-                                                    <table className="w-full">
-                                                        <thead>
-                                                            <tr className="border-b border-fwm-line text-left">
-                                                                <SortableHeader label="Tiêu đề" sortKey="title" sort={postSort} onSort={togglePostSort} />
-                                                                <SortableHeader label="Chuyên mục" sortKey="category" sort={postSort} onSort={togglePostSort} />
-                                                                <th className="pb-2 text-right font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Hành động</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-                                                                visiblePosts.map((p) => (
-                                                                    <AdminTableRow key={p.id} post={p} onEdit={handleEdit} onDelete={handleDelete}></AdminTableRow>
-                                                                ))
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                <>
+                                                    <div className="overflow-x-auto rounded-fwm-lg border border-fwm-line bg-fwm-card p-4">
+                                                        <table className="w-full">
+                                                            <thead>
+                                                                <tr className="border-b border-fwm-line text-left">
+                                                                    <SortableHeader label="Tiêu đề" sortKey="title" sort={postSort} onSort={togglePostSort} />
+                                                                    <SortableHeader label="Chuyên mục" sortKey="category" sort={postSort} onSort={togglePostSort} />
+                                                                    <th className="pb-2 text-right font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Hành động</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {
+                                                                    pagedPosts.map((p) => (
+                                                                        <AdminTableRow key={p.id} post={p} onEdit={handleEdit} onDelete={handleDelete}></AdminTableRow>
+                                                                    ))
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    {totalPages > 1 && (
+                                                        <div className="mt-4 flex items-center justify-between">
+                                                            <p className="text-sm text-fwm-muted">
+                                                                Trang {postPage}/{totalPages} — {visiblePosts.length} bài viết
+                                                            </p>
+                                                            <div className="flex gap-2">
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    disabled={postPage <= 1}
+                                                                    onClick={() => setPostPage((p) => p - 1)}
+                                                                >
+                                                                    Trước
+                                                                </Button>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    disabled={postPage >= totalPages}
+                                                                    onClick={() => setPostPage((p) => p + 1)}
+                                                                >
+                                                                    Sau
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </>
                                     )

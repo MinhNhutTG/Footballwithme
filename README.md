@@ -31,16 +31,16 @@ Full-stack football news platform — articles, search, favorites, comments, med
 
 ## Overview
 
-FootballWithMe is a full-stack content platform for football news, built as a React + Express + MongoDB monorepo. It ships with public-facing article browsing, search, favorites, and comments, plus a protected admin dashboard for managing posts, categories, and comments.
+FootballWithMe is a full-stack content platform for football news, built as a React + Express + MongoDB monorepo. It ships with public-facing article browsing, search, favorites, comments, and view-based popularity ranking, plus a protected admin dashboard for managing posts and users.
 
 | Capability | Description |
 |---|---|
-| Content | Browse articles by category, view article detail pages |
+| Content | Browse articles by category, view article detail pages, per-article view counts, view-based "Popular" ranking |
 | Search | Full-text search across articles |
 | Engagement | Favorite articles, post comments |
-| Auth | JWT-based registration/login, Google Sign-In, email verification, forgot/reset password, change password |
+| Auth | JWT-based registration/login, Google Sign-In, email verification, forgot/reset password, change password, account deletion |
 | Media | Avatar, cover image, and video uploads via Cloudinary |
-| Admin | Dedicated dashboard to manage posts, categories, comments, and users |
+| Admin | Dedicated dashboard to manage posts (paginated table) and users |
 | i18n | Multi-language UI support |
 
 ## Tech Stack
@@ -181,6 +181,7 @@ Base URL: `/api`
 | `GET` | `/users/me` | Get the current user's profile |
 | `PUT` | `/users/me` | Update name / bio / avatar |
 | `PUT` | `/users/change-password` | Change password (current password required unless the account has none yet, e.g. Google-only) |
+| `DELETE` | `/users/me` | Delete the current user's account (requires current password unless the account has none, e.g. Google-only); cascades to delete the user's comments |
 | `GET` | `/users` | List all users *(admin)* |
 | `PUT` | `/users/:id/role` | Update a user's role *(admin)* |
 | `DELETE` | `/users/:id` | Delete a user *(admin)* |
@@ -190,6 +191,7 @@ Base URL: `/api`
 | `POST` | `/posts` | Create a post *(admin)* |
 | `PUT` | `/posts/:id` | Update a post *(admin)* |
 | `DELETE` | `/posts/:id` | Delete a post *(admin)* |
+| `POST` | `/posts/:id/view` | Increment a post's view count, returns the new count |
 | **Comments** | | |
 | `GET` | `/comments` | List comments |
 | `POST` | `/comments` | Create a comment |

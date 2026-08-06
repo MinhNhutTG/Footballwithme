@@ -150,6 +150,9 @@ export const dict = {
             cancel: 'Hủy',
             filterPlaceholder: 'Lọc bình luận...',
             error: 'Có lỗi xảy ra, vui lòng thử lại.',
+            replyAction: 'Trả lời',
+            replyPlaceholder: 'Viết trả lời...',
+            deletedText: 'Bình luận đã bị xoá',
         },
         reaction: {
             loginToReact: 'Đăng nhập để thả cảm xúc',
@@ -306,6 +309,9 @@ export const dict = {
             cancel: 'Cancel',
             filterPlaceholder: 'Filter comments...',
             error: 'Something went wrong, please try again.',
+            replyAction: 'Reply',
+            replyPlaceholder: 'Write a reply...',
+            deletedText: 'This comment has been deleted',
         },
         reaction: {
             loginToReact: 'Log in to react',

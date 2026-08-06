@@ -7,7 +7,7 @@ import { CommentProvider, useCommentContext } from "../../context/CommentContext
 import CommentInput from "./CommentInput";
 function CommentSectionContent() {
     const { t } = useLang();
-    const { comments, loading, error, addComment, removeComment, user } = useCommentContext();
+    const { topLevelComments, repliesByParent, loading, error, addComment, removeComment, user } = useCommentContext();
     const listRef = useRef(null);
     const inputRef = useRef(null);
     const [filter, setFilter] = useState('');
@@ -17,7 +17,7 @@ function CommentSectionContent() {
     useLayoutEffect(() => {
         const element = listRef.current;
         if (element) element.scrollTop = element.scrollHeight;
-    }, [comments.length]);
+    }, [topLevelComments.length]);
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -27,8 +27,8 @@ function CommentSectionContent() {
     }
 
     const filtered = useMemo(
-        () => comments.filter((c) => c.text.toLowerCase().includes(filter.toLowerCase())),
-        [comments, filter]
+        () => topLevelComments.filter((c) => c.text.toLowerCase().includes(filter.toLowerCase())),
+        [topLevelComments, filter]
     );
     return (
         <section className="mx-auto max-w-3xl px-4 py-12">
@@ -47,7 +47,7 @@ function CommentSectionContent() {
                 {error && <p className="text-sm text-fwm-pink">{t.comment.error}</p>}
                 {/* danh sách comment sẽ render ở đây */}
                 {filtered.map((cmt) => (
-                    <CommentItem key={cmt._id} comment={cmt}></CommentItem>
+                    <CommentItem key={cmt._id} comment={cmt} replies={repliesByParent[cmt._id] || []}></CommentItem>
                 ))}
 
             </div>

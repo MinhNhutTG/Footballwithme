@@ -4,8 +4,8 @@ export function getComments(postId){
     return apiRequest(`/comments?postId=${postId}`);
 }
 
-export function addComment(postId, text, token){
-    return apiRequest(`/comments`, {method: 'POST', body: {postId, text}, token})
+export function addComment(postId, text, token, parentId = null){
+    return apiRequest(`/comments`, {method: 'POST', body: {postId, text, parentId}, token})
 }
 
 export function deleteComment(id, token){

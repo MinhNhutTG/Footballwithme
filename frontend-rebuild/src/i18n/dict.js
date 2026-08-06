@@ -120,9 +120,11 @@ export const dict = {
             heading: 'Liên hệ với chúng tôi',
             desc: 'Có góp ý, câu hỏi hoặc muốn đóng góp bài viết? Gửi tin nhắn cho chúng tôi.',
             name: 'Họ tên', email: 'Email', message: 'Nội dung', send: 'Gửi tin nhắn',
+            sending: 'Đang gửi...',
             successTitle: 'Đã gửi thành công!',
             successDesc: 'Cảm ơn bạn đã liên hệ, chúng tôi sẽ phản hồi sớm nhất có thể.',
             backHome: 'Về trang chủ',
+            error: 'Có lỗi xảy ra, vui lòng thử lại.',
         },
         profile: {
             heading: 'Hồ sơ của bạn',
@@ -283,9 +285,11 @@ export const dict = {
             heading: 'Contact us',
             desc: 'Have feedback, a question, or want to contribute an article? Send us a message.',
             name: 'Name', email: 'Email', message: 'Message', send: 'Send message',
+            sending: 'Sending...',
             successTitle: 'Message sent!',
             successDesc: "Thanks for reaching out, we'll get back to you as soon as possible.",
             backHome: 'Back to home',
+            error: 'Something went wrong, please try again.',
         },
         profile: {
             heading: 'Your profile',

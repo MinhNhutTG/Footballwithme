@@ -12,6 +12,7 @@ const reactionRoutes = require('./routes/reactionRoutes')
 const logRoutes = require('./routes/logRoutes')
 const { generate: generateSitemap } = require('./controllers/sitemapController');
 const notificationRoutes = require('./routes/notificationRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -45,6 +46,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/reactions', reactionRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/uploads', uploadRoutes);
 
 app.use((req, res) => {

@@ -1,16 +1,28 @@
 import { useState } from "react";
 import {useLang} from '../context/LangContext'
 import Button from '../components/ui/Button'
+import { sendContactMessage } from '../api/contact'
 
 function Contact() {
     const [sent, setSent] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [error, setError] = useState('');
     const [form, setForm] = useState({ name: '', email: '', message: '' });
     const {t} = useLang();
     const handleChange = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSent(true);
+        setSending(true);
+        setError('');
+        try {
+            await sendContactMessage(form);
+            setSent(true);
+        } catch (err) {
+            setError(err.message || t.contact.error);
+        } finally {
+            setSending(false);
+        }
     }
     if (sent) {
         return (
@@ -43,7 +55,10 @@ function Contact() {
                     <textarea required rows={5} value={form.message} onChange={handleChange('message')}
                         className="w-full rounded-fwm border border-fwm-line bg-fwm-card px-4 py-3 text-fwm-text focus:border-fwm-accent focus:outline-none" />
                 </div>
-                <Button type="submit" variant="primary" className="w-full">{t.contact.send}</Button>
+                {error && <p className="text-sm text-fwm-pink">{error}</p>}
+                <Button type="submit" variant="primary" className="w-full" disabled={sending}>
+                    {sending ? t.contact.sending : t.contact.send}
+                </Button>
             </form>
         </section>
     );

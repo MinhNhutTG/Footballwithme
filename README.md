@@ -31,16 +31,19 @@ Full-stack football news platform — articles, search, favorites, comments, med
 
 ## Overview
 
-FootballWithMe is a full-stack content platform for football news, built as a React + Express + MongoDB monorepo. It ships with public-facing article browsing, search, favorites, comments, and view-based popularity ranking, plus a protected admin dashboard for managing posts and users.
+FootballWithMe is a full-stack content platform for football news, built as a React + Express + MongoDB monorepo. It ships with public-facing article browsing, search, favorites, threaded comments, reactions, and view-based popularity ranking, plus a protected admin dashboard for managing posts, users, and site activity.
 
 | Capability | Description |
 |---|---|
 | Content | Browse articles by category, view article detail pages, per-article view counts, view-based "Popular" ranking |
 | Search | Full-text search across articles |
-| Engagement | Favorite articles, post comments |
+| Engagement | Favorite articles, threaded comments (1-level replies), 4-type reactions (like/dislike/haha/angry) |
+| Notifications | In-app bell (unread badge, updates on navigation + polling) and email alerts when someone replies to your comment |
 | Auth | JWT-based registration/login, Google Sign-In, email verification, forgot/reset password, change password, account deletion |
 | Media | Avatar, cover image, and video uploads via Cloudinary |
-| Admin | Dedicated dashboard to manage posts (paginated table) and users |
+| Admin | Dashboard to manage posts (paginated table), users, and a site-wide visitor access log |
+| Contact | Contact form emails the site admin directly, with reply-to set to the sender |
+| SEO | Dynamic `sitemap.xml` + `robots.txt`, Google Search Console verification |
 | i18n | Multi-language UI support |
 
 ## Tech Stack
@@ -63,7 +66,7 @@ FootballWithMe is a full-stack content platform for football news, built as a Re
 | Database | MongoDB, Mongoose |
 | Auth | JWT, bcrypt, Google Identity Services (`google-auth-library`) |
 | Media storage | Cloudinary, Multer |
-| Email | Resend (verification, password reset) |
+| Email | Resend (verification, password reset, reply notifications, contact form) |
 | Security | Helmet, express-rate-limit, sanitize-html |
 
 **Infrastructure**
@@ -88,18 +91,18 @@ flowchart LR
 footballwithme/
 ├── backend/                 # REST API
 │   └── src/
-│       ├── models/          # User, Post, Comment
-│       ├── routes/          # auth, posts, users, comments, upload
+│       ├── models/          # User, Post, Comment, Reaction, Notification, VisitLog
+│       ├── routes/          # auth, posts, users, comments, reactions, logs, notifications, contact, upload
 │       ├── controllers/      # business logic per resource
-│       ├── middleware/       # auth guard, upload (Multer), rate limit, error handler
-│       ├── utils/            # sendResetEmail, sendVerificationEmail
+│       ├── middleware/       # auth guard (protect/adminOnly/optionalAuth), upload (Multer), rate limit, error handler
+│       ├── utils/            # sendResetEmail, sendVerificationEmail, sendReplyNotification, sendContactEmail
 │       └── config/          # DB connection, Cloudinary, Resend mailer
 ├── frontend-rebuild/         # Active frontend
 │   └── src/
 │       ├── pages/           # Home, Category, ArticleDetail, Admin, ...
-│       ├── components/       # article, comment, admin, ui, layout, ...
+│       ├── components/       # article, comment, reaction, notification, admin, ui, layout, ...
 │       ├── context/          # global state (auth, etc.)
-│       ├── hooks/
+│       ├── hooks/            # useComments, useReactions, useNotifications, ...
 │       ├── api/              # HTTP client layer
 │       └── i18n/
 └── frontend/                 # Legacy frontend (superseded by frontend-rebuild)
@@ -148,6 +151,7 @@ The frontend reads the API base URL from `VITE_API_URL` in `frontend-rebuild/.en
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
 | `RESEND_API_KEY` | API key for Resend (transactional email) |
+| `ADMIN_EMAIL` | Recipient address for contact-form emails |
 
 > `dotenv.config()` must run before any module that reads `process.env` at import time (e.g. `config/cloudinary.js`, `config/mailer.js`) — in `server.js` it is the first line for this reason.
 
@@ -193,11 +197,26 @@ Base URL: `/api`
 | `DELETE` | `/posts/:id` | Delete a post *(admin)* |
 | `POST` | `/posts/:id/view` | Increment a post's view count, returns the new count |
 | **Comments** | | |
-| `GET` | `/comments` | List comments |
-| `POST` | `/comments` | Create a comment |
-| `DELETE` | `/comments/:id` | Delete a comment |
+| `GET` | `/comments?postId=` | List comments for a post (flat array; replies carry a `parentId`) |
+| `POST` | `/comments` | Create a comment or reply (`parentId` optional, flattened to the root comment server-side) |
+| `DELETE` | `/comments/:id` | Delete a comment — soft-deletes (keeps the thread, clears the text) if it still has replies, hard-deletes otherwise |
+| **Reactions** | | |
+| `GET` | `/reactions?postId=` | Get reaction counts (like/dislike/haha/angry) for a post |
+| `GET` | `/reactions/me?postId=` | Get the current user's reaction on a post |
+| `POST` | `/reactions` | Set a reaction; posting the same type again removes it |
+| **Notifications** | | |
+| `GET` | `/notifications` | List the current user's recent notifications |
+| `GET` | `/notifications/unread-count` | Get the current user's unread notification count |
+| `POST` | `/notifications/mark-read` | Mark all of the current user's notifications as read |
+| **Logs** *(admin)* | | |
+| `POST` | `/logs` | Record a page visit (public; associates the logged-in user if a token is present) |
+| `GET` | `/logs?page=&limit=` | Paginated visitor access log *(admin)* |
+| **Contact** | | |
+| `POST` | `/contact` | Send a contact-form message straight to `ADMIN_EMAIL`, rate-limited |
 | **Upload** | | |
 | `POST` | `/upload` | Upload an image/video file to Cloudinary, returns its URL |
+
+> `GET /sitemap.xml` and `GET /robots.txt` are served at the site root (not under `/api`) — the sitemap is generated dynamically from current posts and proxied to the frontend domain via a Vercel rewrite so its URLs match the site the crawler is indexing.
 
 ## Deployment
 

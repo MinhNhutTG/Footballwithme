@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const reactionRoutes = require('./routes/reactionRoutes')
 const logRoutes = require('./routes/logRoutes')
+const { generate: generateSitemap } = require('./controllers/sitemapController');
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -33,6 +34,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+app.get('/sitemap.xml', generateSitemap);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);

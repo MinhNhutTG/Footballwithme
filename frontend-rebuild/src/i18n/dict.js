@@ -157,6 +157,10 @@ export const dict = {
         reaction: {
             loginToReact: 'Đăng nhập để thả cảm xúc',
         },
+        notification: {
+            heading: 'Thông báo',
+            empty: 'Chưa có thông báo nào.',
+        },
     },
     en: {
         nav: {
@@ -315,6 +319,10 @@ export const dict = {
         },
         reaction: {
             loginToReact: 'Log in to react',
+        },
+        notification: {
+            heading: 'Notifications',
+            empty: 'No notifications yet.',
         },
     },
 }

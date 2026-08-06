@@ -3,6 +3,7 @@ import { useLang } from '../../context/LangContext'
 import { useTheme } from '../../context/ThemeContext'
 import { NavLink, Link } from "react-router-dom";
 import  IconButton  from '../ui/IconButton'
+import NotificationBell from '../notification/NotificationBell'
 import  Button  from '../ui/Button'
 import MobileMenu from '../layout/MobileMenu'
 import { useNavigate } from 'react-router-dom'
@@ -68,6 +69,7 @@ function SiteHeader() {
                     <IconButton label="theme" onClick={toggleTheme} className="hidden sm:inline-flex">
                         {theme === 'dark' ? '☀️' : '🌙'}
                     </IconButton>
+                    {user && <NotificationBell />}
                     {user ? (
                         <div className="hidden items-center gap-2 sm:flex">
                             {isAdmin && <Button to="/admin" variant="ghost">{t.nav.admin}</Button>}

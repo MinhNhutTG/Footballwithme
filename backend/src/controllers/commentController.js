@@ -1,15 +1,27 @@
 const Comment = require('../models/Comment');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const sendReplyNotification = require('../utils/sendReplyNotification');
 
 async function notifyReplyAuthor(rootComment, replyComment, postId) {
+  const recipient = await User.findById(rootComment.author).select('name email').catch(() => null);
+  if (!recipient) return;
+
+  const postUrl = `${process.env.FRONTEND_URL}/bai-viet/${postId}`;
+  const originalText = rootComment.isDeleted ? '(bình luận đã bị xoá)' : rootComment.text;
+
   try {
-    const recipient = await User.findById(rootComment.author).select('name email');
-    if (!recipient) return;
+    await Notification.create({
+      recipient: recipient._id,
+      type: 'reply',
+      message: `${replyComment.author.name} đã trả lời bình luận của bạn`,
+      link: `/bai-viet/${postId}`,
+    });
+  } catch (err) {
+    console.error('Tạo thông báo reply thất bại:', err.message);
+  }
 
-    const postUrl = `${process.env.FRONTEND_URL}/bai-viet/${postId}`;
-    const originalText = rootComment.isDeleted ? '(bình luận đã bị xoá)' : rootComment.text;
-
+  try {
     await sendReplyNotification(recipient.email, {
       replierName: replyComment.author.name,
       originalText,

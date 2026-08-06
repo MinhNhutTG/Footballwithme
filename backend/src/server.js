@@ -9,6 +9,7 @@ const postRoutes = require('./routes/postRoutes');
 const userRoutes = require('./routes/userRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const reactionRoutes = require('./routes/reactionRoutes')
+const logRoutes = require('./routes/logRoutes')
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -38,6 +39,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/reactions', reactionRoutes);
+app.use('/api/logs', logRoutes);
 app.use('/api/uploads', uploadRoutes);
 
 app.use((req, res) => {

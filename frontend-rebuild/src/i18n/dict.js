@@ -142,6 +142,9 @@ export const dict = {
             filterPlaceholder: 'Lọc bình luận...',
             error: 'Có lỗi xảy ra, vui lòng thử lại.',
         },
+        reaction: {
+            loginToReact: 'Đăng nhập để thả cảm xúc',
+        },
     },
     en: {
         nav: {
@@ -285,6 +288,9 @@ export const dict = {
             cancel: 'Cancel',
             filterPlaceholder: 'Filter comments...',
             error: 'Something went wrong, please try again.',
+        },
+        reaction: {
+            loginToReact: 'Log in to react',
         },
     },
 }

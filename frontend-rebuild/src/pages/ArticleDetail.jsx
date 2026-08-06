@@ -5,10 +5,11 @@ import { useFavorites } from '../context/FavoritesContext'
 import SkillStep from '../components/skill/SkillStep'
 import PopularItem from '../components/article/PopularItem'
 import ArticleCard from '../components/article/ArticleCard'
-import CommentSection from '../components/comment/CommentSection'
 import ErrorBoundary from '../components/common/ErrorBoundary'
 import { viewPost } from '../api/posts'
 import { useEffect, useState } from 'react'
+import CommentSection from '../components/comment/CommentSection'
+import ReactionBar from '../components/reaction/ReactionBar'
 function ArticleDetail({ articleId }) {
     const { id } = useParams();
     const { posts, loading } = usePosts();
@@ -133,6 +134,12 @@ function ArticleDetail({ articleId }) {
                     </div>
                 </aside>
             </section>
+
+            <ErrorBoundary fallback={null}>
+                <section className="mx-auto max-w-3xl px-4 pt-10">
+                    <ReactionBar postId={article.id}></ReactionBar>
+                </section>
+            </ErrorBoundary>
 
             {related.length > 0 && (
                 <section className="mx-auto max-w-6xl border-t border-fwm-line px-4 py-12">

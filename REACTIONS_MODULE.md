@@ -1,5 +1,7 @@
 # Module: Reaction bài viết (Like/Dislike/Haha/Giận dữ)
 
+> **✅ Trạng thái: đã hoàn thành và verify (2026-08-06).** Đã code đủ 10 bước + Bước 11 (chỉnh vị trí đặt trước "Bài viết liên quan", icon to hơn kèm nhãn chữ, optimistic update khi đổi reaction cho UI phản hồi tức thì). Đã commit/push (`c67fffc`), đã test tay luồng thật.
+
 Module fullstack tiếp theo sau Lượt xem/Phổ biến (`VIEWS_MODULE.md`, ✅ xong). Khác `views` ở chỗ: `views` là bộ đếm vô danh (ai xem cũng +1, không biết ai xem), còn reaction phải biết **user nào đã thả gì** để cho phép đổi ý / huỷ, và mỗi user chỉ được 1 reaction/bài viết tại một thời điểm.
 
 ## Quyết định đã chốt

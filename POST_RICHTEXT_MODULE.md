@@ -1,6 +1,6 @@
 # Module: Nâng ô nhập bài viết (Intro/Trích dẫn/Lỗi thường gặp) thành rich text
 
-> **✅ Trạng thái: đã code đủ 3 bước (2026-08-07), chưa test UI thật, chưa commit.** Ngoại lệ quy trình (Claude code trực tiếp, xác nhận riêng qua `AskUserQuestion` cho module này). Đã tự verify: `npx vite build` sạch, backend cú pháp hợp lệ, sanitize lọc đúng `<script>`/`onerror` nhưng giữ thẻ hợp lệ (test bằng `node -e` gọi thẳng `sanitizeBilingualRichText`).
+> **✅ Trạng thái: đã hoàn thành, đã commit/push (`b11e87c`).** Ngoại lệ quy trình (Claude code trực tiếp, xác nhận riêng qua `AskUserQuestion` cho module này). Đã tự verify: `npx vite build` sạch, backend cú pháp hợp lệ, sanitize lọc đúng `<script>`/`onerror` nhưng giữ thẻ hợp lệ (test bằng `node -e` gọi thẳng `sanitizeBilingualRichText`). Chưa test UI thật (gõ định dạng trong Admin, xem hiển thị ngoài trang) — cần người dùng tự kiểm tra.
 
 Module fullstack tiếp theo sau Thống kê Admin (`ADMIN_ANALYTICS_MODULE.md`, ✅). Người dùng phản ánh cách viết bài hiện tại "rất cứng nhắc" so với diễn đàn/blog thật — khảo sát code xác nhận đúng: mọi bài viết bị ép vào khung cố định `intro → (steps nếu skill) → body → quote → mistake`, và trong khung đó, chỉ `body` có rich text editor (Tiptap, đã có sẵn từ trước — component `RichTextEditor.jsx`), còn `intro`/`quote`/`mistake`/`excerpt` vẫn là `<textarea>` chữ thường, không gõ đậm/nghiêng/danh sách được.
 

@@ -55,25 +55,23 @@ function CategoryDetail({ categoryId }) {
                 </div>
             </section >
             <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-12 lg:grid-cols-[1fr_280px]">
-                <div className="mb-6 flex flex-wrap gap-2">
-                    <Chip active={activeTag === 'all'} onClick={() => setActiveTag('all')}>
-                        {t.category.allTags}
-                    </Chip>
-                    {tags.map((tag) => (
-                        <Chip key={tag} active={activeTag === tag} onClick={() => setActiveTag(tag)}>{tag}</Chip>
-                    ))}
-
-
-
-                </div>
-                {filtered.length === 0 ? (
-                    <p className="text-fwm-muted">{t.category.empty}</p>
-                ) : (
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        {filtered.map((article) => <ArticleCard key={article.id} article={article}></ArticleCard>)}
+                <div className="min-w-0">
+                    <div className="mb-6 flex flex-wrap gap-2">
+                        <Chip active={activeTag === 'all'} onClick={() => setActiveTag('all')}>
+                            {t.category.allTags}
+                        </Chip>
+                        {tags.map((tag) => (
+                            <Chip key={tag} active={activeTag === tag} onClick={() => setActiveTag(tag)}>{tag}</Chip>
+                        ))}
                     </div>
-
-                )}
+                    {filtered.length === 0 ? (
+                        <p className="text-fwm-muted">{t.category.empty}</p>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                            {filtered.map((article) => <ArticleCard key={article.id} article={article}></ArticleCard>)}
+                        </div>
+                    )}
+                </div>
 
                 <aside>
                     <h3 className="mb-3 font-head text-sm font-bold uppercase tracking-wide text-fwm-text">

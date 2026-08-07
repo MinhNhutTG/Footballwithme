@@ -3,6 +3,7 @@ import { fetchPosts, createPost, updatePost, deletePost } from '../api/posts'
 import { useAuth } from '../context/AuthContext'
 import UsersPanel from '../components/admin/UsersPanel'
 import LogsPanel from '../components/admin/LogsPanel'
+import AnalyticsPanel from '../components/admin/AnalyticsPanel'
 import Button from '../components/ui/Button'
 import AdminTableRow from '../components/admin/AdminTableRow'
 import { CATEGORIES } from '../data/categories'
@@ -171,6 +172,9 @@ function Admin() {
                         <button type="button" onClick={() => setSection('logs')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'logs' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
                             Nhật ký truy cập
                         </button>
+                        <button type="button" onClick={() => setSection('analytics')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'analytics' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
+                            Thống kê
+                        </button>
                     </nav>
                 </aside>
                 <div>
@@ -178,6 +182,8 @@ function Admin() {
                         <UsersPanel token={token} currentUserId={user?._id}></UsersPanel>
                     ) : section === 'logs' ? (
                         <LogsPanel token={token}></LogsPanel>
+                    ) : section === 'analytics' ? (
+                        <AnalyticsPanel token={token}></AnalyticsPanel>
                     ) : (<>
                         <div>
                             <div className="mb-5 flex items-center justify-between">

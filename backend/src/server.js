@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const reactionRoutes = require('./routes/reactionRoutes')
 const logRoutes = require('./routes/logRoutes')
+const analyticsRoutes = require('./routes/analyticsRoutes');
 const { generate: generateSitemap } = require('./controllers/sitemapController');
 const notificationRoutes = require('./routes/notificationRoutes');
 const contactRoutes = require('./routes/contactRoutes');
@@ -45,6 +46,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/reactions', reactionRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/uploads', uploadRoutes);

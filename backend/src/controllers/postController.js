@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
-const { sanitizePostBody } = require('../utils/sanitize');
+const Category = require('../models/Category');
+const { sanitizeBilingualRichText } = require('../utils/sanitize');
 
 async function list(req, res, next) {
   try {
@@ -24,7 +25,16 @@ async function getById(req, res, next) {
 
 async function create(req, res, next) {
   try {
-    const payload = { ...req.body, body: sanitizePostBody(req.body.body) };
+    const category = await Category.findOne({ slug: req.body.category });
+    if (!category) return res.status(400).json({ message: 'Danh mục không hợp lệ' });
+
+    const payload = {
+      ...req.body,
+      body: sanitizeBilingualRichText(req.body.body),
+      intro: sanitizeBilingualRichText(req.body.intro),
+      quote: sanitizeBilingualRichText(req.body.quote),
+      mistake: sanitizeBilingualRichText(req.body.mistake),
+    };
     const post = await Post.create(payload);
     res.status(201).json(post);
   } catch (err) {
@@ -34,7 +44,18 @@ async function create(req, res, next) {
 
 async function update(req, res, next) {
   try {
-    const payload = { ...req.body, body: sanitizePostBody(req.body.body) };
+    if (req.body.category) {
+      const category = await Category.findOne({ slug: req.body.category });
+      if (!category) return res.status(400).json({ message: 'Danh mục không hợp lệ' });
+    }
+
+    const payload = {
+      ...req.body,
+      body: sanitizeBilingualRichText(req.body.body),
+      intro: sanitizeBilingualRichText(req.body.intro),
+      quote: sanitizeBilingualRichText(req.body.quote),
+      mistake: sanitizeBilingualRichText(req.body.mistake),
+    };
     const post = await Post.findByIdAndUpdate(req.params.id, payload, {
       new: true,
       runValidators: true,

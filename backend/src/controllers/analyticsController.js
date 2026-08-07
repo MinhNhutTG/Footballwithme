@@ -3,8 +3,7 @@ const User = require('../models/User');
 const Comment = require('../models/Comment');
 const Reaction = require('../models/Reaction');
 const VisitLog = require('../models/VisitLog');
-
-const CATEGORY_IDS = ['skill', 'tactic', 'exp', 'player'];
+const Category = require('../models/Category');
 
 async function getOverview(req, res, next) {
   try {
@@ -20,6 +19,7 @@ async function getOverview(req, res, next) {
       reactionAgg,
       categoryAgg,
       trafficAgg,
+      allCategories,
     ] = await Promise.all([
       Post.countDocuments(),
       User.countDocuments(),
@@ -37,6 +37,7 @@ async function getOverview(req, res, next) {
           },
         },
       ]),
+      Category.find().select('slug'),
     ]);
 
     const totalViews = viewsAgg[0]?.total || 0;
@@ -45,7 +46,7 @@ async function getOverview(req, res, next) {
     reactionAgg.forEach((r) => { reactionCounts[r._id] = r.count; });
 
     const categoryCounts = {};
-    CATEGORY_IDS.forEach((id) => { categoryCounts[id] = 0; });
+    allCategories.forEach((c) => { categoryCounts[c.slug] = 0; });
     categoryAgg.forEach((c) => { categoryCounts[c._id] = c.count; });
 
     const trafficMap = {};

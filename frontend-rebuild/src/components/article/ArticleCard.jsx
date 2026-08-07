@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useLang } from "../../context/LangContext";
 import { useFavorites } from '../../context/FavoritesContext'
+import { useCategories } from '../../context/CategoryContext'
 
 function ArticleCard({ article }) {
     const { lang, t } = useLang();
     const { isFavorite, toggleFavorites } = useFavorites();
+    const { categories } = useCategories();
     const liked = isFavorite(article.id);
-    const catLabel = t.categories[article.category]?.label;
+    const catLabel = categories.find((c) => c.slug === article.category)?.label[lang];
     return (
 
         <article className="group rounded-fwm-lg border border-fwm-line bg-fwm-card p-3 transition duration-300 hover:-translate-y-1.5 hover:shadow-fwm">

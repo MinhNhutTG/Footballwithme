@@ -8,6 +8,7 @@ import { LangProvider } from './context/LangContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx'
 import { PostsProvider } from './context/PostsContext.jsx'
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
+import { CategoryProvider } from './context/CategoryContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,11 +16,13 @@ createRoot(document.getElementById('root')).render(
       <LangProvider>
         <AuthProvider>
           <FavoritesProvider>
-            <PostsProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </PostsProvider>
+            <CategoryProvider>
+              <PostsProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </PostsProvider>
+            </CategoryProvider>
           </FavoritesProvider>
 
         </AuthProvider>

@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../../context/LangContext';
-import { CATEGORIES } from '../../data/categories';
+import { useCategories } from '../../context/CategoryContext';
 
 function SiteFooter() {
-    const { t } = useLang();
+    const { lang, t } = useLang();
+    const { categories } = useCategories();
     const siteLinks = [
         { to: '/', label: t.nav.home },
         { to: '/gioi-thieu', label: t.nav.about },
@@ -25,10 +26,10 @@ function SiteFooter() {
                     <div>
                         <h4 className="font-head text-sm font-bold uppercase tracking-wide text-fwm-text">{t.footer.categoriesHeading}</h4>
                         <ul className="mt-3 space-y-2">
-                            {CATEGORIES.map((cat) => (
-                                <li key={cat.id}>
-                                    <Link to={`/chuyen-muc/${cat.id}`} className="text-sm text-fwm-muted hover:text-fwm-accent">
-                                        {t.categories[cat.id].label}
+                            {categories.map((cat) => (
+                                <li key={cat._id}>
+                                    <Link to={`/chuyen-muc/${cat.slug}`} className="text-sm text-fwm-muted hover:text-fwm-accent">
+                                        {cat.label[lang]}
                                     </Link>
                                 </li>
                             ))}

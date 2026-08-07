@@ -5,10 +5,15 @@ import {
 } from 'recharts'
 import { fetchAnalytics } from '../../api/analytics'
 import { useLang } from '../../context/LangContext'
+import { useCategories } from '../../context/CategoryContext'
 import { REACTIONS } from '../../config/reactions'
 
 const REACTION_COLORS = { like: '#34d399', dislike: '#f87171', haha: '#fbbf24', angry: '#fb7185' };
 const CATEGORY_COLORS = { skill: '#f59e0b', tactic: '#6366f1', exp: '#14b8a6', player: '#ec4899' };
+const FALLBACK_PALETTE = ['#eab308', '#0ea5e9', '#a855f7', '#22c55e', '#f97316', '#06b6d4'];
+function colorForCategory(slug, index) {
+    return CATEGORY_COLORS[slug] || FALLBACK_PALETTE[index % FALLBACK_PALETTE.length];
+}
 
 function StatCard({ label, value }) {
     return (
@@ -21,6 +26,7 @@ function StatCard({ label, value }) {
 
 function AnalyticsPanel({ token }) {
     const { t, lang } = useLang();
+    const { categories } = useCategories();
     const [data, setData] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
@@ -37,8 +43,10 @@ function AnalyticsPanel({ token }) {
     if (error) return <p className="text-sm text-fwm-pink">{error}</p>;
     if (!data) return null;
 
-    const categoryData = Object.entries(data.categoryCounts).map(([id, count]) => ({
-        id, count, label: t.categories[id]?.label || id,
+    const categoryData = Object.entries(data.categoryCounts).map(([id, count], index) => ({
+        id, count,
+        label: categories.find((c) => c.slug === id)?.label[lang] || id,
+        color: colorForCategory(id, index),
     }));
 
     const reactionData = REACTIONS.map((r) => ({
@@ -84,7 +92,7 @@ function AnalyticsPanel({ token }) {
                             <Tooltip />
                             <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                                 {categoryData.map((c) => (
-                                    <Cell key={c.id} fill={CATEGORY_COLORS[c.id]} />
+                                    <Cell key={c.id} fill={c.color} />
                                 ))}
                             </Bar>
                         </BarChart>

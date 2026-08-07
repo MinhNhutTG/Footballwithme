@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import { useLang } from '../context/LangContext'
 import Chip from '../components/ui/Chip'
 import { useSearchParams } from 'react-router-dom'
-import { CATEGORIES } from '../data/categories'
+import { useCategories } from '../context/CategoryContext'
 import { usePosts } from '../context/PostsContext'
 import ArticleCard from '../components/article/ArticleCard'
 function Search() {
 
-    const { t } = useLang();
+    const { lang, t } = useLang();
     const { posts } = usePosts();
+    const { categories } = useCategories();
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q') || '';
     const category = searchParams.get('cat') || 'all';
@@ -46,9 +47,9 @@ function Search() {
 
             <div className="mt-4 flex flex-wrap gap-2">
                 <Chip active={category === 'all'} onClick={() => setParams('cat', 'all')} >{t.category.allTags}</Chip>
-                {CATEGORIES.map((c) => (
-                    <Chip key={c.id} active={category === c.id} onClick={() => setParams('cat', c.id)}>
-                        {t.categories[c.id]?.label}
+                {categories.map((c) => (
+                    <Chip key={c._id} active={category === c.slug} onClick={() => setParams('cat', c.slug)}>
+                        {c.label[lang]}
                     </Chip>
                 ))}
             </div>

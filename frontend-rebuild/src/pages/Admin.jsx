@@ -4,12 +4,13 @@ import { useAuth } from '../context/AuthContext'
 import UsersPanel from '../components/admin/UsersPanel'
 import LogsPanel from '../components/admin/LogsPanel'
 import AnalyticsPanel from '../components/admin/AnalyticsPanel'
+import CategoryPanel from '../components/admin/CategoryPanel'
 import Button from '../components/ui/Button'
 import AdminTableRow from '../components/admin/AdminTableRow'
-import { CATEGORIES } from '../data/categories'
 import SortableHeader from "../components/admin/SortableHeader";
 import PostForm from "../components/admin/PostForm"
 import { usePosts } from '../context/PostsContext'
+import { useCategories } from '../context/CategoryContext'
 
 
 function toFormValues(post) {
@@ -48,6 +49,7 @@ function Admin() {
 
 
     const { refetch: refetchPublicPosts } = usePosts();
+    const { categories } = useCategories();
 
     useEffect(() => {
         if (!isAdmin) return false;
@@ -68,7 +70,7 @@ function Admin() {
 
     const handleSubmit = async (form) => {
 
-        const category = CATEGORIES.find((c) => c.id === form.category);
+        const category = categories.find((c) => c.slug === form.category);
         const payload = {
             category: form.category,
             title: { vi: form.titleVi, en: form.titleEn },
@@ -77,7 +79,7 @@ function Admin() {
             body: { vi: form.bodyVi, en: form.bodyEn },
             quote: { vi: form.quoteVi, en: form.quoteEn },
             mistake: { vi: form.mistakeVi, en: form.mistakeEn },
-            steps: form.category === 'skill'
+            steps: category?.hasSteps
                 ? form.steps.map((step) => ({
                     title: { vi: step.titleVi, en: step.titleEn },
                     desc: { vi: step.descVi, en: step.descEn },
@@ -175,6 +177,9 @@ function Admin() {
                         <button type="button" onClick={() => setSection('analytics')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'analytics' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
                             Thống kê
                         </button>
+                        <button type="button" onClick={() => setSection('categories')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'categories' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
+                            Danh mục
+                        </button>
                     </nav>
                 </aside>
                 <div>
@@ -184,6 +189,8 @@ function Admin() {
                         <LogsPanel token={token}></LogsPanel>
                     ) : section === 'analytics' ? (
                         <AnalyticsPanel token={token}></AnalyticsPanel>
+                    ) : section === 'categories' ? (
+                        <CategoryPanel token={token}></CategoryPanel>
                     ) : (<>
                         <div>
                             <div className="mb-5 flex items-center justify-between">
@@ -218,9 +225,9 @@ function Admin() {
                                                     className="rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text focus:border-fwm-accent focus:outline-none"
                                                 >
                                                     <option value="all">Tất cả chuyên mục</option>
-                                                    {CATEGORIES.map((c) => {
-                                                        return <option key={c.id} value={c.id}> {c.id}</option>
-                                                    })}
+                                                    {categories.map((c) => (
+                                                        <option key={c._id} value={c.slug}>{c.label.vi}</option>
+                                                    ))}
                                                 </select>
                                             </div>
                                             {visiblePosts.length === 0 ? (<p className="text-fwm-muted">Không tìm thấy kết quả phù hợp.</p>) : (
@@ -274,7 +281,7 @@ function Admin() {
                                     )
                                 }
                             </>) : (<>
-                                <PostForm initial={editingPost ? toFormValues(editingPost) : undefined} onSubmit={handleSubmit} onCancel={handleCancel} token={token} />
+                                <PostForm initial={editingPost ? toFormValues(editingPost) : undefined} categories={categories} onSubmit={handleSubmit} onCancel={handleCancel} token={token} />
                             </>)}
 
                         </div>

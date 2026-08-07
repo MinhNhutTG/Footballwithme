@@ -91,9 +91,9 @@ function ArticleDetail({ articleId }) {
                         </div>
                     )}
 
-                    <p className="text-lg leading-relaxed text-fwm-text">
-                        {article.intro[lang]}
-                    </p>
+                    <div className="prose-content text-lg leading-relaxed text-fwm-text"
+                        // sanitized server-side (sanitize-html) before storage, admin-only write access
+                        dangerouslySetInnerHTML={{ __html: article.intro[lang] }} />
 
                     {isSkill && article.steps && (
                         <div className="mt-8">
@@ -110,17 +110,15 @@ function ArticleDetail({ articleId }) {
                     <div className="prose-content mt-8 leading-relaxed text-fwm-muted"
                         // sanitized server-side (sanitize-html) before storage, admin-only write access
                         dangerouslySetInnerHTML={{ __html: article.body[lang] }} />
-                    <blockquote className="mt-8 rounded-fwm-lg border-l-4 border-fwm-accent bg-fwm-card px-5 py-4 font-head text-lg font-bold italic text-fwm-text">
-                        "{article.quote[lang]}"
-                    </blockquote>
+                    <blockquote className="prose-content mt-8 rounded-fwm-lg border-l-4 border-fwm-accent bg-fwm-card px-5 py-4 font-head text-lg font-bold italic text-fwm-text"
+                        dangerouslySetInnerHTML={{ __html: article.quote[lang] }} />
 
                     <div className="mt-8 rounded-fwm-lg border border-fwm-pink/30 bg-fwm-pink/10 px-5 py-4">
                         <p className="font-head text-xs font-bold uppercase tracking-wide text-fwm-pink">
                             {t.article.mistakeLabel}
                         </p>
-                        <p className="mt-1.5 text-sm text-fwm-text" >
-                            {article.mistake[lang]}
-                        </p>
+                        <div className="prose-content mt-1.5 text-sm text-fwm-text"
+                            dangerouslySetInnerHTML={{ __html: article.mistake[lang] }} />
                     </div>
                 </article>
                 <aside>

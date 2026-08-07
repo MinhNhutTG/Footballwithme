@@ -1,8 +1,10 @@
 import { useLang } from '../../context/LangContext'
+import { useCategories } from '../../context/CategoryContext'
 
 
 function AdminTableRow({ post, onEdit, onDelete }) {
     const { lang, t } = useLang();
+    const { categories } = useCategories();
     return (
         <tr className="border-b border-fwm-line last:border-0">
             <td className="py-3 pr-4">
@@ -15,7 +17,7 @@ function AdminTableRow({ post, onEdit, onDelete }) {
                 <span className="font-head text-sm font-bold text-fwm-text">{post.title[lang]}</span>
             </td>
             <td className="py-3 pr-4 text-sm text-fwm-muted">
-                {t.categories[post.category]?.label}
+                {categories.find((c) => c.slug === post.category)?.label[lang]}
             </td>
             <td className="py-3 text-right">
                 <button type="button" onClick={() => onEdit(post.id)} className="mr-3 font-head text-xs font-bold text-fwm-accent hover:underline">{t.admin.edit}</button>

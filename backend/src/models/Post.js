@@ -20,7 +20,6 @@ const postSchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      enum: ['skill', 'tactic', 'exp', 'player'],
       required: true,
     },
     gradient: { type: String, default: 'from-fwm-card to-fwm-card-2' },

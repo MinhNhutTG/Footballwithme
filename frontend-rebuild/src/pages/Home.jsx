@@ -4,7 +4,7 @@ import SectionHeading from '../components/common/SectionHeading';
 import { usePosts } from '../context/PostsContext'
 import ArticleCard from '../components/article/ArticleCard'
 import CategoryTitle from '../components/article/CategoryTile'
-import { CATEGORIES } from '../data/categories'
+import { useCategories } from '../context/CategoryContext'
 const COMBO_KEYS = [
     { label: '△', className: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' },
     { label: '□', className: 'bg-pink-500/20 text-pink-300 border-pink-400/40' },
@@ -15,6 +15,7 @@ const COMBO_KEYS = [
 function Home() {
     const { t } = useLang();
     const { posts } = usePosts();
+    const { categories } = useCategories();
     const lastes = posts.slice(0, 6);
     return (
         <div className="animate-fwm-in">
@@ -101,7 +102,7 @@ function Home() {
             <section className="mx-auto max-w-6xl px-4 py-14">
                 <SectionHeading title={t.section.categories} ></SectionHeading>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    {CATEGORIES.map((cat, i) => <CategoryTitle key={cat.id} category={cat} index={i} ></CategoryTitle>)}
+                    {categories.map((cat) => <CategoryTitle key={cat._id} category={cat}></CategoryTitle>)}
                 </div>
             </section>
         </div>

@@ -2,20 +2,22 @@ import { useMemo, useState } from "react";
 import CategoryTile from "../components/article/CategoryTile";
 import SectionHeading from "../components/common/SectionHeading"
 import { useLang } from "../context/LangContext"
-import { CATEGORIES } from "../data/categories";
+import { useCategories } from "../context/CategoryContext";
 import { usePosts } from "../context/PostsContext";
 import Chip from '../components/ui/Chip'
 import ArticleCard from "../components/article/ArticleCard";
 import PopularItem from '../components/article/PopularItem'
 import { useParams } from "react-router-dom";
+
 function CategoryOverview() {
     const { t } = useLang();
+    const { categories } = useCategories();
     return (
         <section className="mx-auto max-w-6xl px-4 py-14">
             <SectionHeading title={t.section.categories}></SectionHeading>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {CATEGORIES.map((cat, i) => (
-                    <CategoryTile key={cat.id} category={cat} index={i}></CategoryTile>
+                {categories.map((cat) => (
+                    <CategoryTile key={cat._id} category={cat}></CategoryTile>
                 ))}
             </div>
         </section>
@@ -23,28 +25,30 @@ function CategoryOverview() {
 }
 
 function CategoryDetail({ categoryId }) {
-    const { t } = useLang();
+    const { lang, t } = useLang();
     const { posts } = usePosts();
+    const { categories } = useCategories();
     const [activeTag, setActiveTag] = useState('all');
     const categoryArticles = useMemo(() => posts.filter((post) => post.category === categoryId), [categoryId, posts]);
     const tags = useMemo(() => Array.from(new Set(categoryArticles.flatMap((a) => a.tags))), [categoryArticles]);
     const filtered = activeTag === 'all' ? categoryArticles : categoryArticles.filter((cat) => cat.tags.includes(activeTag))
-    console.log(t);
-    console.log(t.categories[categoryId])
 
-    const meta = t.categories[categoryId];
-    const category = CATEGORIES.find((c) => c.id == categoryId);
+    const category = categories.find((c) => c.slug === categoryId);
     const popular = [...posts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
 
     if (!category) return null;
     return (
         <>
-            <section className={`border-b border-fwm-line bg-gradient-to-br ${category.gradient} px-4 py-14`} >
-                <div className="mx-auto max-w-6xl">
+            <section
+                className={`relative border-b border-fwm-line px-4 py-14 ${category.imageUrl ? 'bg-cover bg-center' : `bg-gradient-to-br ${category.gradient}`}`}
+                style={category.imageUrl ? { backgroundImage: `url(${category.imageUrl})` } : undefined}
+            >
+                {category.imageUrl && <div className="absolute inset-0 bg-fwm-ink/50" />}
+                <div className="relative mx-auto max-w-6xl">
                     <h1 className="font-head text-3xl font-black text-white sm:text-4xl">
-                        {meta.label}
+                        {category.label[lang]}
                     </h1>
-                    <p className="mt-2 max-w-md text-white/85"> {meta.desc}</p>
+                    <p className="mt-2 max-w-md text-white/85"> {category.desc[lang]}</p>
                     <p className="mt-4 font-head text-xs font-bold uppercase tracking-wide text-white/70">
                         {categoryArticles.length} {t.category.countSuffix}
                     </p>

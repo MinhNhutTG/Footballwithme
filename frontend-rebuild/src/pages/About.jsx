@@ -1,8 +1,9 @@
 import { usePosts } from '../context/PostsContext';
-import {CATEGORIES} from '../data/categories'
+import { useCategories } from '../context/CategoryContext'
 import {useLang} from '../context/LangContext'
 function About() {
     const { posts } = usePosts();
+    const { categories } = useCategories();
     const {t} = useLang();
     return (
         <section className="mx-auto max-w-3xl px-4 py-16">
@@ -16,7 +17,7 @@ function About() {
                     <div className="mt-1 text-sm text-fwm-muted">{t.about.statArticles}</div>
                 </div>
                 <div>
-                    <div className="font-head text-3xl font-extrabold text-fwm-accent">{CATEGORIES.length}</div>
+                    <div className="font-head text-3xl font-extrabold text-fwm-accent">{categories.length}</div>
                     <div className="mt-1 text-sm text-fwm-muted">{t.about.statCategories}</div>
                 </div>
                 <div>

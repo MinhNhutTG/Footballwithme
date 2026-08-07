@@ -12,12 +12,12 @@ function sanitizeRichText(html) {
   return sanitizeHtml(html || '', RICH_TEXT_OPTIONS);
 }
 
-function sanitizePostBody(body) {
-  if (!body) return body;
+function sanitizeBilingualRichText(field) {
+  if (!field) return field;
   return {
-    vi: sanitizeRichText(body.vi),
-    en: sanitizeRichText(body.en),
+    vi: sanitizeRichText(field.vi),
+    en: sanitizeRichText(field.en),
   };
 }
 
-module.exports = { sanitizeRichText, sanitizePostBody };
+module.exports = { sanitizeRichText, sanitizeBilingualRichText };

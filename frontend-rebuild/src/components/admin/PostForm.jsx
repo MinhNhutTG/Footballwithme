@@ -3,7 +3,6 @@ import { useLang } from '../../context/LangContext';
 import Button from '../ui/Button';
 import RichTextEditor from './RichTextEditor';
 import GamepadKey from '../skill/GamepadKey';
-import { CATEGORIES } from '../../data/categories';
 import { uploadFile } from '../../api/upload';
 
 
@@ -11,7 +10,7 @@ const EMPTY_FORM = {
   titleVi: '', titleEn: '', excerptVi: '', excerptEn: '',
   introVi: '', introEn: '', bodyVi: '', bodyEn: '',
   quoteVi: '', quoteEn: '', mistakeVi: '', mistakeEn: '',
-  category: CATEGORIES[0].id, steps: [],
+  category: '', steps: [],
   coverImageUrl: '',
   videoUrl: '',
 };
@@ -26,11 +25,14 @@ const KEY_KINDS = [
   { value: 'cross', label: 'Chéo (xanh dương)' },
 ];
 
-function PostForm({ initial, onSubmit, onCancel, token }) {
+function PostForm({ initial, categories, onSubmit, onCancel, token }) {
   const { t } = useLang();
-  const [form, setForm] = useState({ ...EMPTY_FORM, ...initial });
+  const [form, setForm] = useState({ ...EMPTY_FORM, category: categories[0]?.slug || '', ...initial });
   const [fileError, setFileError] = useState('');
   const [uploading, setUploading] = useState(false);
+
+  const selectedCategory = categories.find((c) => c.slug === form.category);
+  const showSteps = !!selectedCategory?.hasSteps;
 
   const handleChange = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
   const handleRichChange = (field) => (html) => setForm((f) => ({ ...f, [field]: html }));
@@ -83,10 +85,10 @@ function PostForm({ initial, onSubmit, onCancel, token }) {
     <form onSubmit={handleSubmit} className="space-y-4 rounded-fwm-lg border border-fwm-line bg-fwm-card p-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formTitleVi', 'titleVi')}{textField('formTitleEn', 'titleEn')}</div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formExcerptVi', 'excerptVi', 'textarea')}{textField('formExcerptEn', 'excerptEn', 'textarea')}</div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formIntroVi', 'introVi', 'textarea')}{textField('formIntroEn', 'introEn', 'textarea')}</div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{bodyField('formIntroVi', 'introVi')}{bodyField('formIntroEn', 'introEn')}</div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{bodyField('formBodyVi', 'bodyVi')}{bodyField('formBodyEn', 'bodyEn')}</div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formQuoteVi', 'quoteVi', 'textarea')}{textField('formQuoteEn', 'quoteEn', 'textarea')}</div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{textField('formMistakeVi', 'mistakeVi', 'textarea')}{textField('formMistakeEn', 'mistakeEn', 'textarea')}</div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{bodyField('formQuoteVi', 'quoteVi')}{bodyField('formQuoteEn', 'quoteEn')}</div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{bodyField('formMistakeVi', 'mistakeVi')}{bodyField('formMistakeEn', 'mistakeEn')}</div>
 
       <div>
         <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">{t.admin.formCategory}</label>
@@ -95,7 +97,7 @@ function PostForm({ initial, onSubmit, onCancel, token }) {
           onChange={handleChange('category')}
           className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-fwm-text focus:border-fwm-accent focus:outline-none"
         >
-          {CATEGORIES.map((cat) => <option key={cat.id} value={cat.id}>{t.categories[cat.id].label}</option>)}
+          {categories.map((cat) => <option key={cat._id} value={cat.slug}>{cat.label.vi}</option>)}
         </select>
       </div>
       <div>
@@ -105,7 +107,7 @@ function PostForm({ initial, onSubmit, onCancel, token }) {
         {form.coverImageUrl && <img src={form.coverImageUrl} alt="" className="mt-2 h-32 w-full rounded-fwm object-cover" />}
       </div>
 
-      {form.category === 'skill' && (
+      {showSteps && (
         <div>
           <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Video hướng dẫn (tùy chọn)</label>
           <input type="file" accept="video/*" onChange={handleFileUpload('videoUrl')}
@@ -116,7 +118,7 @@ function PostForm({ initial, onSubmit, onCancel, token }) {
 
       {fileError && <p className="text-sm text-fwm-pink">{fileError}</p>}
 
-      {form.category === 'skill' && (
+      {showSteps && (
         <div className="rounded-fwm-lg border border-fwm-line bg-fwm-card-2 p-4">
           <div className="mb-1 flex items-center justify-between">
             <h3 className="font-head text-sm font-bold uppercase tracking-wide text-fwm-text">{t.admin.stepsHeading}</h3>

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useLang } from '../../context/LangContext';
+import { useCategories } from '../../context/CategoryContext'
 function PopularItem({ article, rank }) {
     const { lang, t } = useLang();
+    const { categories } = useCategories();
     return (
         <Link to={`/bai-viet/${article.id}`} className="flex items-center gap-3 rounded-fwm px-2 py-2.5 transition hover:bg-fwm-pill">
             <span className="font-head text-xl font-black text-fwm-muted/60">
@@ -18,7 +20,7 @@ function PopularItem({ article, rank }) {
                     {article.title[lang]}
                 </span>
                 <span className="text-xs text-fwm-muted">
-                    {t.categories[article.category]?.label}
+                    {categories.find((c) => c.slug === article.category)?.label[lang]}
                 </span>
             </span>
         </Link>

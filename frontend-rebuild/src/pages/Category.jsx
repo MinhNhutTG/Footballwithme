@@ -9,6 +9,7 @@ import ArticleCard from "../components/article/ArticleCard";
 import PopularItem from '../components/article/PopularItem'
 import Button from '../components/ui/Button'
 import { useParams } from "react-router-dom";
+import SEO from '../components/common/SEO'
 
 const POSTS_PER_PAGE = 6;
 
@@ -17,6 +18,7 @@ function CategoryOverview() {
     const { categories } = useCategories();
     return (
         <section className="mx-auto max-w-6xl px-4 py-14">
+            <SEO title={t.section.categories} />
             <SectionHeading title={t.section.categories}></SectionHeading>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {categories.map((cat) => (
@@ -64,6 +66,7 @@ function CategoryDetail({ categoryId }) {
     if (!category) return null;
     return (
         <>
+            <SEO title={category.label[lang]} description={category.desc?.[lang]} />
             <section
                 className={`relative border-b border-fwm-line px-4 py-14 ${category.imageUrl ? 'bg-cover bg-center' : `bg-gradient-to-br ${category.gradient}`}`}
                 style={category.imageUrl ? { backgroundImage: `url(${category.imageUrl})` } : undefined}

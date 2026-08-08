@@ -3,6 +3,7 @@ import { usePosts } from '../context/PostsContext';
 import { useCategories } from '../context/CategoryContext'
 import {useLang} from '../context/LangContext'
 import { fetchUserCount } from '../api/users'
+import SEO from '../components/common/SEO'
 function About() {
     const { posts } = usePosts();
     const { categories } = useCategories();
@@ -16,6 +17,7 @@ function About() {
     }, []);
     return (
         <section className="mx-auto max-w-3xl px-4 py-16">
+            <SEO title={t.about.heading} description={t.about.desc} />
             <h1 className="font-head text-3xl font-black text-fwm-text sm:text-4xl">{t.about.heading}</h1>
             <p className="mt-5 text-lg leading-relaxed text-fwm-muted">{t.about.desc}</p>
             <p className="mt-4 leading-relaxed text-fwm-muted">{t.about.mission}</p>

@@ -6,6 +6,7 @@ import { fetchPosts } from '../api/posts'
 import ArticleCard from '../components/article/ArticleCard'
 import CategoryTitle from '../components/article/CategoryTile'
 import { useCategories } from '../context/CategoryContext'
+import SEO from '../components/common/SEO'
 const COMBO_KEYS = [
     { label: '△', className: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' },
     { label: '□', className: 'bg-pink-500/20 text-pink-300 border-pink-400/40' },
@@ -25,6 +26,7 @@ function Home() {
     }, []);
     return (
         <div className="animate-fwm-in">
+            <SEO />
             <section className="relative overflow-hidden border-b border-fwm-line bg-fwm-bg-deep">
                 <div
                     className="absolute inset-0 animate-fwm-grid opacity-10"

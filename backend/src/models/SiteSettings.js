@@ -8,6 +8,10 @@ const siteSettingsSchema = new mongoose.Schema(
     description: { type: bilingualString, default: () => ({ vi: '', en: '' }) },
     logoUrl: { type: String, default: '' },
     socialLinks: { type: [{ label: String, url: String }], default: [] },
+    seo: {
+      type: { metaDescription: bilingualString },
+      default: () => ({ metaDescription: { vi: '', en: '' } }),
+    },
   },
   { timestamps: true }
 );

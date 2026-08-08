@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLang } from '../../context/LangContext';
 import Button from '../ui/Button';
 import RichTextEditor from './RichTextEditor';
 import GamepadKey from '../skill/GamepadKey';
 import { uploadFile } from '../../api/upload';
+import { checkLength, checkWordCount, checkPresence } from '../../utils/seoChecks';
+import SeoChecklist from './SeoChecklist';
 
 
 const EMPTY_FORM = {
@@ -39,6 +41,13 @@ function PostForm({ initial, categories, onSubmit, onCancel, token }) {
       setForm((f) => ({ ...f, category: categories[0].slug }));
     }
   }, [categories]);
+
+  const seoItems = useMemo(() => [
+    { label: 'Tiêu đề (VI)', ...checkLength(form.titleVi, 30, 60) },
+    { label: 'Mô tả ngắn (VI)', ...checkLength(form.excerptVi, 120, 160) },
+    { label: 'Nội dung chính (VI)', ...checkWordCount(form.bodyVi, 300) },
+    { label: 'Ảnh cover', ...checkPresence(form.coverImageUrl, 'Đã có ảnh cover', 'Chưa có ảnh cover — bài viết sẽ hiện gradient mặc định') },
+  ], [form.titleVi, form.excerptVi, form.bodyVi, form.coverImageUrl]);
 
   const selectedCategory = categories.find((c) => c.slug === form.category);
   const showSteps = !!selectedCategory?.hasSteps;
@@ -115,6 +124,8 @@ function PostForm({ initial, categories, onSubmit, onCancel, token }) {
           className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text" />
         {form.coverImageUrl && <img src={form.coverImageUrl} alt="" className="mt-2 h-32 w-full rounded-fwm object-cover" />}
       </div>
+
+      <SeoChecklist items={seoItems} />
 
       {showSteps && (
         <div>

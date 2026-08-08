@@ -2,6 +2,7 @@ import { useState } from "react";
 import {useLang} from '../context/LangContext'
 import Button from '../components/ui/Button'
 import { sendContactMessage } from '../api/contact'
+import SEO from '../components/common/SEO'
 
 function Contact() {
     const [sent, setSent] = useState(false);
@@ -36,6 +37,7 @@ function Contact() {
     }
     return (
         <section className="mx-auto max-w-xl px-4 py-16">
+            <SEO title={t.contact.heading} description={t.contact.desc} />
             <h1 className="font-head text-3xl font-black text-fwm-text">{t.contact.heading}</h1>
             <p className="mt-3 text-fwm-muted">{t.contact.desc}</p>
 

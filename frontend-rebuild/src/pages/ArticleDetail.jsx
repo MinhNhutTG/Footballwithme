@@ -11,6 +11,7 @@ import { viewPost } from '../api/posts'
 import { useEffect, useState } from 'react'
 import CommentSection from '../components/comment/CommentSection'
 import ReactionBar from '../components/reaction/ReactionBar'
+import SEO from '../components/common/SEO'
 function ArticleDetail({ articleId }) {
     const { id } = useParams();
     const { posts, loading } = usePosts();
@@ -46,6 +47,7 @@ function ArticleDetail({ articleId }) {
 
     return (
         <>
+            <SEO title={article.title[lang]} description={article.excerpt[lang]} />
             <section className={`relative border-b border-fwm-line px-4 py-16 ${article.coverImageUrl ? 'bg-cover bg-center' : `bg-gradient-to-br ${article.gradient}`}`}
                 style={article.coverImageUrl ? { backgroundImage: `url(${article.coverImageUrl})` } : undefined}>
                 {article.coverImageUrl && <div className="absolute inset-0 bg-fwm-ink/50" />}

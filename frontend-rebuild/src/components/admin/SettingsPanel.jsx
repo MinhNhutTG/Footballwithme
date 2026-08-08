@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { updateSettings } from '../../api/settings'
 import { uploadFile } from '../../api/upload'
 import { useSettings } from '../../context/SettingsContext'
 import Button from '../ui/Button'
+import { checkLength } from '../../utils/seoChecks'
+import SeoChecklist from './SeoChecklist'
 
 const EMPTY_FORM = {
     siteName: '', descriptionVi: '', descriptionEn: '', logoUrl: '', socialLinks: [],
+    seoDescriptionVi: '', seoDescriptionEn: '',
 };
 
 function toFormValues(settings) {
@@ -15,6 +18,8 @@ function toFormValues(settings) {
         descriptionEn: settings.description?.en || '',
         logoUrl: settings.logoUrl || '',
         socialLinks: settings.socialLinks || [],
+        seoDescriptionVi: settings.seo?.metaDescription?.vi || '',
+        seoDescriptionEn: settings.seo?.metaDescription?.en || '',
     };
 }
 
@@ -28,6 +33,12 @@ function SettingsPanel({ token }) {
     useEffect(() => {
         if (settings) setForm(toFormValues(settings));
     }, [settings]);
+
+    const seoItems = useMemo(() => [
+        { label: 'Tên site', ...checkLength(form.siteName, 10, 60) },
+        { label: 'Mô tả SEO (VI)', ...checkLength(form.seoDescriptionVi, 120, 160) },
+        { label: 'Mô tả SEO (EN)', ...checkLength(form.seoDescriptionEn, 120, 160) },
+    ], [form.siteName, form.seoDescriptionVi, form.seoDescriptionEn]);
 
     const handleChange = (field) => (e) => { setSaved(false); setForm((f) => ({ ...f, [field]: e.target.value })); };
 
@@ -61,6 +72,7 @@ function SettingsPanel({ token }) {
             description: { vi: form.descriptionVi, en: form.descriptionEn },
             logoUrl: form.logoUrl,
             socialLinks: form.socialLinks,
+            seo: { metaDescription: { vi: form.seoDescriptionVi, en: form.seoDescriptionEn } },
         };
         try {
             await updateSettings(payload, token);
@@ -115,6 +127,20 @@ function SettingsPanel({ token }) {
                     )}
                     <p className="mt-1 text-xs text-fwm-muted">Chưa upload thì Header/Footer tự hiện logo chữ mặc định.</p>
                 </div>
+
+                <div>
+                    <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Mô tả SEO (VI)</label>
+                    <textarea rows={2} maxLength={160} value={form.seoDescriptionVi} onChange={handleChange('seoDescriptionVi')}
+                        className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-fwm-text focus:border-fwm-accent focus:outline-none" />
+                </div>
+                <div>
+                    <label className="mb-1.5 block font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Mô tả SEO (EN)</label>
+                    <textarea rows={2} maxLength={160} value={form.seoDescriptionEn} onChange={handleChange('seoDescriptionEn')}
+                        className="w-full rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-fwm-text focus:border-fwm-accent focus:outline-none" />
+                </div>
+                <p className="text-xs text-fwm-muted">Hiện trên kết quả tìm kiếm Google cho các trang không có mô tả riêng (Trang chủ, Giới thiệu, Liên hệ...). Nên viết dưới 160 ký tự.</p>
+
+                <SeoChecklist items={seoItems} />
 
                 <div>
                     <div className="mb-1 flex items-center justify-between">

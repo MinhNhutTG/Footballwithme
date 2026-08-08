@@ -11,26 +11,29 @@ import { PostsProvider } from './context/PostsContext.jsx'
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { CategoryProvider } from './context/CategoryContext.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
+import { HelmetProvider } from 'react-helmet-async';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
-      <LangProvider>
-        <AuthProvider>
-          <FavoritesProvider>
-            <CategoryProvider>
-              <SettingsProvider>
-                <PostsProvider>
-                  <BrowserRouter>
-                    <App />
-                  </BrowserRouter>
-                </PostsProvider>
-              </SettingsProvider>
-            </CategoryProvider>
-          </FavoritesProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <LangProvider>
+          <AuthProvider>
+            <FavoritesProvider>
+              <CategoryProvider>
+                <SettingsProvider>
+                  <PostsProvider>
+                    <BrowserRouter>
+                      <App />
+                    </BrowserRouter>
+                  </PostsProvider>
+                </SettingsProvider>
+              </CategoryProvider>
+            </FavoritesProvider>
 
-        </AuthProvider>
-      </LangProvider>
-    </ThemeProvider>
+          </AuthProvider>
+        </LangProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   </StrictMode>
 );

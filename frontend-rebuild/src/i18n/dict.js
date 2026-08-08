@@ -7,7 +7,7 @@ export const dict = {
         },
         footer: {
             tagline: 'Nội dung eFootball cho người chơi Việt — kỹ năng, chiến thuật, kinh nghiệm.',
-            categoriesHeading: 'Chuyên mục', siteLinksHeading: 'Trang',
+            categoriesHeading: 'Chuyên mục', siteLinksHeading: 'Trang', socialHeading: 'Kết nối',
             note: '© FootballWithMe. Nội dung mang tính tham khảo, tổng hợp từ cộng đồng eFootball.',
         },
         section: { latest: 'Bài viết mới nhất', categories: 'Chuyên mục nổi bật', viewAll: 'Xem tất cả' },
@@ -193,7 +193,7 @@ export const dict = {
         },
         footer: {
             tagline: 'eFootball content for the Vietnamese player base — skills, tactics, experience.',
-            categoriesHeading: 'Categories', siteLinksHeading: 'Site',
+            categoriesHeading: 'Categories', siteLinksHeading: 'Site', socialHeading: 'Connect',
             note: '© FootballWithMe. Content is for reference, curated from the eFootball community.',
         },
         section: { latest: 'Latest articles', categories: 'Featured categories', viewAll: 'View all' },

@@ -4,7 +4,7 @@ import { ReactionProvider, useReactionContext } from "../../context/ReactionCont
 import { REACTIONS } from "../../config/reactions";
 
 function ReactionContent() {
-    const { t } = useLang();
+    const { t, lang } = useLang();
     const { counts, mine, loading, toggleReaction, user } = useReactionContext();
 
     if (loading) return null;
@@ -18,14 +18,14 @@ function ReactionContent() {
                         key={reaction.type}
                         disabled={!user}
                         onClick={() => toggleReaction(reaction.type)}
-                        title={reaction.label}
+                        title={reaction.label[lang]}
                         className={`flex items-center gap-2 rounded-fwm-pill border px-3.5 py-2 text-sm font-bold transition hover:scale-105 active:scale-95 ${active
                             ? 'border-fwm-accent bg-fwm-accent/10 text-fwm-accent shadow-sm'
                             : 'border-fwm-line text-fwm-muted hover:border-fwm-accent hover:text-fwm-accent'
                             } ${!user ? 'cursor-not-allowed opacity-60 hover:scale-100' : ''}`}
                     >
-                        <img src={reaction.icon} className="h-8 w-8" alt={reaction.label} />
-                        <span>{reaction.label}</span>
+                        <img src={reaction.icon} className="h-8 w-8" alt={reaction.label[lang]} />
+                        <span>{reaction.label[lang]}</span>
                         <span className="opacity-70">{counts[reaction.type] ?? 0}</span>
                     </button>
                 )

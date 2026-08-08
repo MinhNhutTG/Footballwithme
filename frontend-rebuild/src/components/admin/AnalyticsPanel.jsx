@@ -50,7 +50,7 @@ function AnalyticsPanel({ token }) {
     }));
 
     const reactionData = REACTIONS.map((r) => ({
-        type: r.type, label: r.label, count: data.reactionCounts[r.type] || 0,
+        type: r.type, label: r.label[lang], count: data.reactionCounts[r.type] || 0,
     }));
 
     const trafficData = data.traffic.map((d) => ({

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLang } from '../../context/LangContext';
 import Button from '../ui/Button';
 import RichTextEditor from './RichTextEditor';
@@ -30,6 +30,15 @@ function PostForm({ initial, categories, onSubmit, onCancel, token }) {
   const [form, setForm] = useState({ ...EMPTY_FORM, category: categories[0]?.slug || '', ...initial });
   const [fileError, setFileError] = useState('');
   const [uploading, setUploading] = useState(false);
+
+  // categories có thể vẫn đang fetch lúc form mount (form.category rỗng) — tự
+  // điền category đầu tiên ngay khi categories về, tránh submit "category: ''"
+  // dù dropdown nhìn như đã chọn sẵn 1 mục.
+  useEffect(() => {
+    if (!form.category && categories.length > 0) {
+      setForm((f) => ({ ...f, category: categories[0].slug }));
+    }
+  }, [categories]);
 
   const selectedCategory = categories.find((c) => c.slug === form.category);
   const showSteps = !!selectedCategory?.hasSteps;

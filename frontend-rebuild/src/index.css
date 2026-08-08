@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Category/Post gradient class chuỗi giờ đọc động từ DB (Category.gradient,
+   Post.gradient) — không còn nằm cố định trong source như data/categories.js
+   cũ, nên Tailwind không tự quét thấy để sinh CSS. Safelist thủ công 4 tổ hợp
+   gradient đang seed sẵn (skill/tactic/exp/player). Nếu tạo danh mục mới với
+   gradient khác 4 tổ hợp này, phải thêm thủ công vào đây, nếu không tile/card
+   fallback gradient của danh mục đó sẽ trong suốt khi build production. */
+@source inline("from-amber-400 via-orange-500 to-pink-500 from-indigo-500 via-blue-500 to-cyan-400 from-emerald-400 via-teal-500 to-cyan-500 from-fuchsia-500 via-pink-500 to-rose-400");
+
 @theme {
   --color-fwm-bg: #0e1330;
   --color-fwm-bg-elev: #161c42;

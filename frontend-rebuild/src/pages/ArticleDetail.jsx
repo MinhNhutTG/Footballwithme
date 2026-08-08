@@ -2,6 +2,7 @@ import { usePosts } from '../context/PostsContext'
 import { Link, useParams } from 'react-router-dom'
 import { useLang } from '../context/LangContext'
 import { useFavorites } from '../context/FavoritesContext'
+import { useCategories } from '../context/CategoryContext'
 import SkillStep from '../components/skill/SkillStep'
 import PopularItem from '../components/article/PopularItem'
 import ArticleCard from '../components/article/ArticleCard'
@@ -15,6 +16,7 @@ function ArticleDetail({ articleId }) {
     const { posts, loading } = usePosts();
     const { lang, t } = useLang();
     const { isFavorite, toggleFavorites } = useFavorites();
+    const { categories } = useCategories();
 
     const article = posts.find((p) => p.id === id);
     const [views, setViews] = useState(article?.views || 0);
@@ -36,7 +38,8 @@ function ArticleDetail({ articleId }) {
             </section>
         );
     }
-    const isSkill = article.category === 'skill';
+    const currentCategory = categories.find((c) => c.slug === article.category);
+    const hasSteps = !!currentCategory?.hasSteps;
     const liked = isFavorite(article.id);
     const popular = [...posts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
     const related = posts.filter((a) => a.category === article.category && a.id !== article.id).slice(0, 3);
@@ -48,7 +51,7 @@ function ArticleDetail({ articleId }) {
                 {article.coverImageUrl && <div className="absolute inset-0 bg-fwm-ink/50" />}
                 <div className="relative mx-auto max-w-4xl">
                     <Link to={`/chuyen-muc/${article.category}`} className="font-head text-xs font-bold uppercase tracking-wide text-white/80 hover:text-white" >
-                        ← {t.categories[article.category]?.label}
+                        ← {currentCategory?.label[lang]}
                     </Link>
                     <h1 className="mt-3 font-head text-3xl font-black text-white sm:text-4xl">
                         {article.title[lang]}
@@ -76,7 +79,7 @@ function ArticleDetail({ articleId }) {
 
             <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-12 lg:grid-cols-[1fr_280px]">
                 <article className="min-w-0">
-                    {isSkill && (
+                    {hasSteps && (
                         <div className="mb-8 overflow-hidden rounded-fwm-lg border border-fwm-line bg-fwm-card-2">
                             {article.videoUrl ? (
                                 <video src={article.videoUrl} controls className="aspect-video w-full" />
@@ -95,7 +98,7 @@ function ArticleDetail({ articleId }) {
                         // sanitized server-side (sanitize-html) before storage, admin-only write access
                         dangerouslySetInnerHTML={{ __html: article.intro[lang] }} />
 
-                    {isSkill && article.steps && (
+                    {hasSteps && article.steps && (
                         <div className="mt-8">
                             <h2 className="mb-4 font-head text-xl font-extrabold text-fwm-text">
                                 {t.article.stepsHeading}

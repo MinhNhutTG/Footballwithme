@@ -2,8 +2,8 @@ import { useSettings } from '../../context/SettingsContext';
 
 function Logo({ compact = false }) {
     const { settings } = useSettings();
-    const badgeSize = compact ? 'h-8 w-8 text-sm' : 'h-9 w-9 text-base';
-    const nameSize = compact ? 'text-base' : 'text-lg';
+    const badgeSize = compact ? 'h-8 w-8 text-sm' : 'h-11 w-11 text-lg';
+    const nameSize = compact ? 'text-base' : 'text-xl';
     const siteName = settings?.siteName || 'FootballWithMe';
 
     return (

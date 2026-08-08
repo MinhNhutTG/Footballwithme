@@ -6,6 +6,7 @@ import  IconButton  from '../ui/IconButton'
 import NotificationBell from '../notification/NotificationBell'
 import  Button  from '../ui/Button'
 import MobileMenu from '../layout/MobileMenu'
+import Logo from './Logo'
 import { useNavigate } from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
 function SiteHeader() {
@@ -38,8 +39,7 @@ function SiteHeader() {
         <header className="sticky top-0 z-40 border-b border-fwm-line bg-fwm-bg-deep/95 backdrop-blur">
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
                 <Link to="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-fwm bg-fwm-accent font-head text-base font-black text-fwm-ink">eF</span>
-                    <span className="font-head text-lg font-extrabold text-fwm-text">FootballWithMe</span>
+                    <Logo />
                 </Link>
                 <nav className="hidden items-center gap-1 lg:flex">
                     {navItems.map((item) => (
@@ -56,18 +56,18 @@ function SiteHeader() {
                     <Link to='/tim-kiem' aria-label={t.nav.search} title={t.nav.search}
                         className="hidden h-10 w-10 items-center justify-center rounded-full border border-fwm-line bg-fwm-pill text-fwm-text transition hover:bg-fwm-card sm:inline-flex"
                     >
-                        🔍
+                        <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     </Link>
                     <Link to='/yeu-thich' aria-label={t.nav.favorites} title={t.nav.favorites}
                         className="hidden h-10 w-10 items-center justify-center rounded-full border border-fwm-line bg-fwm-pill text-fwm-text transition hover:bg-fwm-card sm:inline-flex"
                     >
-                        ♥
+                        <i className="fa-regular fa-heart" aria-hidden="true"></i>
                     </Link>
                     <IconButton label="VN|EN" onClick={toggleLang} className="hidden text-xs sm:inline-flex" >
                         {lang === 'vi' ? 'VI' : 'EN'}
                     </IconButton>
                     <IconButton label="theme" onClick={toggleTheme} className="hidden sm:inline-flex">
-                        {theme === 'dark' ? '☀️' : '🌙'}
+                        {theme === 'dark' ? <i className="fa-solid fa-sun" aria-hidden="true"></i> : <i className="fa-solid fa-moon" aria-hidden="true"></i>}
                     </IconButton>
                     {user && <NotificationBell />}
                     {user ? (
@@ -84,7 +84,7 @@ function SiteHeader() {
                     )}
                     <button type="button" aria-label="menu" onClick={() => setMenuOpen((o) => !o)}
                         className="inline-flex h-10 w-10 items-center justify-center rounded-fwm border border-fwm-line text-fwm-text lg:hidden">
-                        {menuOpen ? '✕' : '☰'}
+                        {menuOpen ? <i className="fa-solid fa-xmark" aria-hidden="true"></i> : <i className="fa-solid fa-bars" aria-hidden="true"></i>}
                     </button>
                 </div>
             </div>

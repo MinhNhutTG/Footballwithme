@@ -71,7 +71,7 @@ function ArticleDetail({ articleId }) {
                             className={`ml-auto text-2xl transition active:scale-90 ${liked ? 'text-fwm-pink' : 'text-white/70 hover:text-fwm-pink'}`}
                             aria-label="favorite"
                         >
-                            {liked ? '♥' : '♡'}
+                            {liked ? <i className="fa-solid fa-heart" aria-hidden="true"></i> : <i className="fa-regular fa-heart" aria-hidden="true"></i>}
                         </button>
                     </div>
                 </div>
@@ -85,7 +85,7 @@ function ArticleDetail({ articleId }) {
                                 <video src={article.videoUrl} controls className="aspect-video w-full" />
                             ) : (
                                 <div className={`relative flex aspect-video items-center justify-center bg-gradient-to-br ${article.gradient}`}>
-                                    <span className="animate-fwm-ring flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink">▶</span>
+                                    <span className="animate-fwm-ring flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-2xl text-fwm-ink"><i className="fa-solid fa-play" aria-hidden="true"></i></span>
                                 </div>
                             )}
                             <p className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-fwm-muted">

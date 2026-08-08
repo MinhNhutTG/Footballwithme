@@ -1,155 +1,48 @@
-import { useState, useEffect, useMemo } from "react";
-import { fetchPosts, createPost, updatePost, deletePost } from '../api/posts'
 import { useAuth } from '../context/AuthContext'
+import { useSearchParams } from 'react-router-dom'
+import PostsPanel from '../components/admin/PostsPanel'
 import UsersPanel from '../components/admin/UsersPanel'
 import LogsPanel from '../components/admin/LogsPanel'
 import AnalyticsPanel from '../components/admin/AnalyticsPanel'
 import CategoryPanel from '../components/admin/CategoryPanel'
+import SettingsPanel from '../components/admin/SettingsPanel'
 import Button from '../components/ui/Button'
-import AdminTableRow from '../components/admin/AdminTableRow'
-import SortableHeader from "../components/admin/SortableHeader";
-import PostForm from "../components/admin/PostForm"
-import { usePosts } from '../context/PostsContext'
-import { useCategories } from '../context/CategoryContext'
 
+const NAV_GROUPS = [
+    {
+        heading: 'Nội dung', items: [
+            { key: 'posts', label: 'Bài viết', icon: 'fa-solid fa-file-lines' },
+            { key: 'categories', label: 'Danh mục', icon: 'fa-solid fa-folder-open' },
+        ]
+    },
+    {
+        heading: 'Phân tích', items: [
+            { key: 'analytics', label: 'Thống kê', icon: 'fa-solid fa-chart-column' },
+            { key: 'logs', label: 'Nhật ký truy cập', icon: 'fa-solid fa-clock-rotate-left' },
+        ]
+    },
+    {
+        heading: 'Hệ thống', items: [
+            { key: 'users', label: 'Người dùng', icon: 'fa-solid fa-user' },
+            { key: 'settings', label: 'Cài đặt', icon: 'fa-solid fa-gear' },
+        ]
+    },
+];
+const NAV_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
 
-function toFormValues(post) {
-    return {
-        titleVi: post.title.vi, titleEn: post.title.en,
-        excerptVi: post.excerpt.vi, excerptEn: post.excerpt.en,
-        introVi: post.intro?.vi || '', introEn: post.intro?.en || '',
-        bodyVi: post.body?.vi || '', bodyEn: post.body?.en || '',
-        quoteVi: post.quote?.vi || '', quoteEn: post.quote?.en || '',
-        mistakeVi: post.mistake?.vi || '', mistakeEn: post.mistake?.en || '',
-        category: post.category,
-        steps: (post.steps || []).map((step) => ({
-            titleVi: step.title?.vi || '', titleEn: step.title?.en || '',
-            descVi: step.desc?.vi || '', descEn: step.desc?.en || '',
-            keyKind: step.keys?.[0]?.kind || 'default', keyLabel: step.keys?.[0]?.label || '',
-        })),
-        coverImageUrl: post.coverImageUrl || '',
-        videoUrl: post.videoUrl || '',
-    };
-}
-const POSTS_PER_PAGE = 6;
+const PANELS = {
+    users: UsersPanel,
+    logs: LogsPanel,
+    analytics: AnalyticsPanel,
+    categories: CategoryPanel,
+    settings: SettingsPanel,
+};
 
 function Admin() {
-    const [section, setSection] = useState('posts');
-    const { token, user, isAdmin, logout } = useAuth();
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [view, setView] = useState('list');
-    const [editingId, setEditingId] = useState(null);
-    const [postSearch, setPostSearch] = useState('');
-    const [postCategoryFilter, setPostCategoryFilter] = useState('all');
-    const [postSort, setPostSort] = useState({ key: null, dir: 'asc' });
-    // pagination state
-    const [postPage, setPostPage] = useState(1);
-
-
-    const { refetch: refetchPublicPosts } = usePosts();
-    const { categories } = useCategories();
-
-    useEffect(() => {
-        if (!isAdmin) return;
-        setLoading(true);
-        fetchPosts()
-            .then((res) => setPosts(res.data)).catch((err) => setError(err.message)).finally(() => setLoading(false))
-    }, [isAdmin])
-
-    useEffect(() => {
-        setPostPage(1);
-    }, [postSearch, postCategoryFilter, postSort])
-
-    const handleNew = () => { setEditingId(null); setView('new'); };
-
-    const handleEdit = (id) => { setEditingId(id); setView('edit'); };
-
-    const handleCancel = () => { setView('list'); setEditingId(null); };
-
-    const handleSubmit = async (form) => {
-
-        const category = categories.find((c) => c.slug === form.category);
-        const payload = {
-            category: form.category,
-            gradient: category?.gradient,
-            title: { vi: form.titleVi, en: form.titleEn },
-            excerpt: { vi: form.excerptVi, en: form.excerptEn },
-            intro: { vi: form.introVi, en: form.introEn },
-            body: { vi: form.bodyVi, en: form.bodyEn },
-            quote: { vi: form.quoteVi, en: form.quoteEn },
-            mistake: { vi: form.mistakeVi, en: form.mistakeEn },
-            steps: category?.hasSteps
-                ? form.steps.map((step) => ({
-                    title: { vi: step.titleVi, en: step.titleEn },
-                    desc: { vi: step.descVi, en: step.descEn },
-                    keys: [{ kind: step.keyKind, label: step.keyLabel }],
-                }))
-                : [],
-            coverImageUrl: form.coverImageUrl,
-            videoUrl: form.videoUrl,
-        };
-
-
-        try {
-            if (view === 'edit' && editingId) {
-                const updated = await updatePost(editingId, payload, token);
-                setPosts((prev) => prev.map((p) => (p.id === editingId ? updated : p)));
-            }
-            else {
-                const created = await createPost(payload, token);
-                setPosts((prev) => [created, ...prev]);
-            }
-            setView('list');
-            setEditingId(null);
-            refetchPublicPosts();
-        }
-        catch (err) {
-            setError(err.message);
-        }
-    }
-
-    const handleDelete = async (id) => {
-        try {
-            await deletePost(id, token);
-            setPosts((prev) => (prev.filter((p) => p.id != id)));
-            refetchPublicPosts();
-        }
-        catch (err) {
-            setError(err.message);
-        }
-    }
-
-    const togglePostSort = (key) => (
-        setPostSort((s) => ({ key, dir: s.key === key && s.dir === 'asc' ? 'desc' : 'asc' }))
-    );
-
-    const visiblePosts = useMemo(() => {
-        const q = postSearch.trim().toLowerCase();
-        let list = posts.filter((p) => {
-            if (postCategoryFilter !== 'all' && p.category !== postCategoryFilter) return false;
-            if (!q) return true;
-            return `${p.title.vi} ${p.title.en}`.toLocaleLowerCase().includes(q);
-        });
-        if (postSort.key) {
-            list = [...list].sort((a, b) => {
-                const av = postSort.key === 'title' ? a.title.vi : a.category;
-                const bv = postSort.key === 'title' ? b.title.vi : b.category;
-                const cmp = av.localeCompare(bv);
-                return postSort.dir === 'asc' ? cmp : -cmp;
-            });
-        }
-        return list;
-    }, [posts, postSearch, postCategoryFilter, postSort]);
-
-    const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE));
-    const pagedPosts = useMemo(() => visiblePosts.slice((postPage - 1) * POSTS_PER_PAGE, postPage * POSTS_PER_PAGE), [visiblePosts, postPage]);
-    useEffect(() => {
-        if (postPage > totalPages) setPostPage(totalPages);
-    }, [postPage, totalPages]);
-    const editingPost = posts.find((p) => p.id === editingId);
-
+    const { token, user, isAdmin } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const section = searchParams.get('tab') || 'posts';
+    const setSection = (key) => setSearchParams(key === 'posts' ? {} : { tab: key });
 
     if (!isAdmin) {
         return (
@@ -161,132 +54,48 @@ function Admin() {
         );
     }
 
+    const Panel = PANELS[section];
+
     return (
-        <section className="mx-auto max-w-6xl px-4 py-10">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[200px_1fr]">
-                <aside>
-                    <nav className="space-y-1">
-                        <button type="button" onClick={() => setSection('posts')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'posts' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
-                            Bài viết
-                        </button>
-                        <button type="button" onClick={() => setSection('users')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'users' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
-                            Người dùng
-                        </button>
-                        <button type="button" onClick={() => setSection('logs')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'logs' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
-                            Nhật ký truy cập
-                        </button>
-                        <button type="button" onClick={() => setSection('analytics')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'analytics' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
-                            Thống kê
-                        </button>
-                        <button type="button" onClick={() => setSection('categories')} className={`block w-full rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === 'categories' ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}>
-                            Danh mục
-                        </button>
+        <section className="mx-auto max-w-6xl px-4 py-8">
+            <nav className="mb-6 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+                {NAV_ITEMS.map((item) => (
+                    <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setSection(item.key)}
+                        className={`flex shrink-0 items-center gap-1.5 rounded-fwm-pill px-3.5 py-2 font-head text-sm font-bold ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'bg-fwm-pill text-fwm-text'}`}
+                    >
+                        <i className={item.icon} aria-hidden="true"></i>{item.label}
+                    </button>
+                ))}
+            </nav>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr]">
+                <aside className="hidden lg:block">
+                    <nav className="sticky top-24 space-y-5">
+                        {NAV_GROUPS.map((group) => (
+                            <div key={group.heading}>
+                                <p className="mb-1.5 px-3 font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">
+                                    {group.heading}
+                                </p>
+                                <div className="space-y-1">
+                                    {group.items.map((item) => (
+                                        <button
+                                            key={item.key}
+                                            type="button"
+                                            onClick={() => setSection(item.key)}
+                                            className={`flex w-full items-center gap-2.5 rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}
+                                        >
+                                            <i className={item.icon} aria-hidden="true"></i>{item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </nav>
                 </aside>
-                <div>
-                    {section === 'users' ? (
-                        <UsersPanel token={token} currentUserId={user?._id}></UsersPanel>
-                    ) : section === 'logs' ? (
-                        <LogsPanel token={token}></LogsPanel>
-                    ) : section === 'analytics' ? (
-                        <AnalyticsPanel token={token}></AnalyticsPanel>
-                    ) : section === 'categories' ? (
-                        <CategoryPanel token={token}></CategoryPanel>
-                    ) : (<>
-                        <div>
-                            <div className="mb-5 flex items-center justify-between">
-                                <h1 className="font-head text-2xl font-black text-fwm-text">
-                                    {view === 'list' ? 'Quản trị nội dung' : view === 'new' ? 'Bài viết mới' : 'Sửa bài viết'}
-                                </h1>
-                                {view === 'list' && (
-                                    <Button variant="primary" onClick={handleNew}>Thêm bài viết</Button>
-                                )}
-                            </div>
-                            {view === 'list' ? (<>
-                                {error && <p className="mb-4 text-sm text-fwm-pink">{error}</p>}
-                                {loading ? (<>
-                                    <p className="text-fwm-muted">....</p>
-                                </>) :
-
-                                    posts.length === 0 ? (<>
-                                        <p className="text-fwm-muted">Chưa có bài viết nào.</p>
-                                    </>) : (
-                                        <>
-                                            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-                                                <input
-                                                    type="search"
-                                                    value={postSearch}
-                                                    onChange={(e) => setPostSearch(e.target.value)}
-                                                    placeholder="Tìm theo tiêu đề..."
-                                                    className="flex-1 rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text placeholder:text-fwm-muted focus:border-fwm-accent focus:outline-none"
-                                                ></input>
-                                                <select
-                                                    value={postCategoryFilter}
-                                                    onChange={(e) => setPostCategoryFilter(e.target.value)}
-                                                    className="rounded-fwm border border-fwm-line bg-fwm-card-2 px-4 py-2.5 text-sm text-fwm-text focus:border-fwm-accent focus:outline-none"
-                                                >
-                                                    <option value="all">Tất cả chuyên mục</option>
-                                                    {categories.map((c) => (
-                                                        <option key={c._id} value={c.slug}>{c.label.vi}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            {visiblePosts.length === 0 ? (<p className="text-fwm-muted">Không tìm thấy kết quả phù hợp.</p>) : (
-                                                <>
-                                                    <div className="overflow-x-auto rounded-fwm-lg border border-fwm-line bg-fwm-card p-4">
-                                                        <table className="w-full">
-                                                            <thead>
-                                                                <tr className="border-b border-fwm-line text-left">
-                                                                    <SortableHeader label="Tiêu đề" sortKey="title" sort={postSort} onSort={togglePostSort} />
-                                                                    <SortableHeader label="Chuyên mục" sortKey="category" sort={postSort} onSort={togglePostSort} />
-                                                                    <th className="pb-2 text-right font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">Hành động</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {
-                                                                    pagedPosts.map((p) => (
-                                                                        <AdminTableRow key={p.id} post={p} onEdit={handleEdit} onDelete={handleDelete}></AdminTableRow>
-                                                                    ))
-                                                                }
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    {totalPages > 1 && (
-                                                        <div className="mt-4 flex items-center justify-between">
-                                                            <p className="text-sm text-fwm-muted">
-                                                                Trang {postPage}/{totalPages} — {visiblePosts.length} bài viết
-                                                            </p>
-                                                            <div className="flex gap-2">
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    disabled={postPage <= 1}
-                                                                    onClick={() => setPostPage((p) => p - 1)}
-                                                                >
-                                                                    Trước
-                                                                </Button>
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    disabled={postPage >= totalPages}
-                                                                    onClick={() => setPostPage((p) => p + 1)}
-                                                                >
-                                                                    Sau
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
-                                        </>
-                                    )
-                                }
-                            </>) : (<>
-                                <PostForm initial={editingPost ? toFormValues(editingPost) : undefined} categories={categories} onSubmit={handleSubmit} onCancel={handleCancel} token={token} />
-                            </>)}
-
-                        </div>
-                    </>)}
+                <div className="min-w-0">
+                    {Panel ? <Panel token={token} currentUserId={user?._id} /> : <PostsPanel token={token} />}
                 </div>
             </div>
         </section>

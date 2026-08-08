@@ -37,7 +37,7 @@ function ArticleCard({ article }) {
                     onClick={() => toggleFavorites(article.id)}
                     className={`shrink-0 text-lg transition active:scale-90 ${liked ? 'text-fwm-pink' : 'text-fwm-muted hover:text-fwm-pink'}`}
                 >
-                    {liked ? '♥' : '♡'}
+                    {liked ? <i className="fa-solid fa-heart" aria-hidden="true"></i> : <i className="fa-regular fa-heart" aria-hidden="true"></i>}
                 </button>
             </div>
             

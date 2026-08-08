@@ -89,7 +89,7 @@ function Home() {
                                     {t.hero.cardRating}
                                 </span>
                                 <span className="animate-fwm-ring flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-fwm-ink">
-                                    ▶
+                                    <i className="fa-solid fa-play" aria-hidden="true"></i>
                                 </span>
                             </div>
                         </div>

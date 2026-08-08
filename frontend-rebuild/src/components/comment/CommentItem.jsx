@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Avatar from '../ui/Avatar'
 import { useCommentContext } from '../../context/CommentContext';
 import { useLang } from '../../context/LangContext';
@@ -30,10 +31,14 @@ function CommentItem({ comment, replies = [], isReply = false }) {
     return (
         <div>
             <div className="flex gap-3 rounded-fwm-lg border border-fwm-line bg-fwm-card p-4 transition hover:border-fwm-accent/40">
-                <Avatar initials={initial} size="sm" preview={comment.author.avatarUrl} />
+                <Link to={`/nguoi-dung/${comment.author._id}`} className="shrink-0">
+                    <Avatar initials={initial} size="sm" preview={comment.author.avatarUrl} />
+                </Link>
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                        <p className="font-head text-sm font-bold text-fwm-text">{comment.author.name}</p>
+                        <Link to={`/nguoi-dung/${comment.author._id}`} className="font-head text-sm font-bold text-fwm-text hover:text-fwm-accent">
+                            {comment.author.name}
+                        </Link>
                         {canDelete && <button onClick={()=> setShowModal(true)} className="shrink-0 text-xs font-bold text-fwm-muted transition hover:text-fwm-pink">
                             {t.comment.deleteAction}
                         </button>}

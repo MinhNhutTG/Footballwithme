@@ -13,6 +13,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
@@ -33,6 +34,7 @@ function App() {
         <Route path='/gioi-thieu' element={<About/>} />
         <Route path='/lien-he' element={<Contact/>} />
         <Route path='/ho-so' element={<Profile/>} />
+        <Route path='/nguoi-dung/:id' element={<PublicProfile/>} />
         <Route path="/quen-mat-khau" element={<ForgotPassword/>}/>
         <Route path="/dat-lai-mat-khau/:token" element={<ResetPassword/>}/>
         <Route path="/xac-thuc-email/:token" element={<VerifyEmail/>}/>

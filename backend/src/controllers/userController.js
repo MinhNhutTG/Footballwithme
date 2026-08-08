@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Comment = require('../models/Comment');
 
@@ -14,6 +15,19 @@ async function count(req, res, next) {
   try {
     const count = await User.countDocuments();
     res.json({ count });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getPublic(req, res, next) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const user = await User.findById(req.params.id).select('name avatarUrl bio createdAt');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
   } catch (err) {
     next(err);
   }
@@ -128,4 +142,4 @@ async function deleteMe(req, res, next) {
   }
 }
 
-module.exports = { list, count, updateRole, remove, getMe, updateMe, changePassword, deleteMe };
+module.exports = { list, count, updateRole, remove, getMe, updateMe, changePassword, deleteMe, getPublic };

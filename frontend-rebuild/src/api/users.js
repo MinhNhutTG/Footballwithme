@@ -8,6 +8,10 @@ export function fetchUserCount(){
     return apiRequest('/users/count');
 }
 
+export function fetchPublicUser(id){
+    return apiRequest(`/users/${id}`);
+}
+
 export function updateUserRole(id, role, token){
     return apiRequest(`/users/${id}/role`, {method: 'PUT', body: {role}, token});
 }

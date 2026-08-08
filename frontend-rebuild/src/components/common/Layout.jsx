@@ -1,7 +1,7 @@
 import SiteHeader from '../layout/SiteHeader'
 import SiteFooter from '../layout/SiteFooter'
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { logVisit } from '../../api/logs';
 
@@ -18,7 +18,9 @@ function Layout() {
 
             <SiteHeader></SiteHeader>
             <main className="flex-1">
-                <Outlet />
+                <Suspense fallback={<div className="flex justify-center py-24"><p className="text-fwm-muted">Đang tải...</p></div>}>
+                    <Outlet />
+                </Suspense>
             </main>
             <SiteFooter></SiteFooter>
         </div>

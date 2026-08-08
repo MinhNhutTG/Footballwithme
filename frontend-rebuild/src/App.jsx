@@ -1,22 +1,25 @@
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/common/Layout';
-import Login from './pages/Login'
-import Register from './pages/Register'
-import AdminLogin from './pages/AdminLogin'
 import Home from './pages/Home'
-import Category from './pages/Category'
-import ArticleDetail from './pages/ArticleDetail';
-import Search from './pages/Search'
-import Favorites from './pages/Favorites'
-import Admin from './pages/Admin';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import NotFound from './pages/NotFound';
-import Profile from './pages/Profile';
-import PublicProfile from './pages/PublicProfile';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import VerifyEmail from './pages/VerifyEmail';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const Category = lazy(() => import('./pages/Category'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
+const Search = lazy(() => import('./pages/Search'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+const Admin = lazy(() => import('./pages/Admin'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Profile = lazy(() => import('./pages/Profile'));
+const PublicProfile = lazy(() => import('./pages/PublicProfile'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+
 function App() {
   return (
     <Routes>

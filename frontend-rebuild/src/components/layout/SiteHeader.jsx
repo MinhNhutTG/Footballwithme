@@ -7,6 +7,7 @@ import NotificationBell from '../notification/NotificationBell'
 import  Button  from '../ui/Button'
 import MobileMenu from '../layout/MobileMenu'
 import Logo from './Logo'
+import UserMenu from './UserMenu'
 import { useNavigate } from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
 function SiteHeader() {
@@ -71,11 +72,7 @@ function SiteHeader() {
                     </IconButton>
                     {user && <NotificationBell />}
                     {user ? (
-                        <div className="hidden items-center gap-2 sm:flex">
-                            {isAdmin && <Button to="/admin" variant="ghost">{t.nav.admin}</Button>}
-                            <Button to="/ho-so" variant="ghost">{user.name}</Button>
-                            <Button variant="primary" onClick={handleLogout}>{t.nav.logout}</Button>
-                        </div>
+                        <UserMenu user={user} isAdmin={isAdmin} onLogout={handleLogout} />
                     ) : (
                         <div className="hidden items-center gap-2 sm:flex">
                             <Button to="/dang-nhap" variant="ghost">{t.nav.login}</Button>

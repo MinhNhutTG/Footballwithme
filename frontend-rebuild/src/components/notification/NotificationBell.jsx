@@ -31,7 +31,7 @@ function NotificationBell() {
     return (
         <div className="relative hidden sm:block" ref={wrapperRef}>
             <IconButton label={t.notification.heading} onClick={handleToggle} className="relative">
-                🔔
+                <i className="fa-solid fa-bell" aria-hidden="true"></i>
                 {unreadCount > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-fwm-pink px-1 text-[10px] font-bold text-white">
                         {unreadCount > 9 ? '9+' : unreadCount}

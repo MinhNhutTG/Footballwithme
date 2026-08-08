@@ -1,9 +1,10 @@
 const express = require('express');
-const { list, updateRole, remove, getMe, updateMe, changePassword, deleteMe } = require('../controllers/userController');
+const { list, count, updateRole, remove, getMe, updateMe, changePassword, deleteMe } = require('../controllers/userController');
 const { protect, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
+router.get('/count', count);
 router.get('/me', protect, getMe);
 router.put('/me', protect, updateMe);
 router.put('/change-password', protect, changePassword);

@@ -4,6 +4,10 @@ export function fetchUsers(token){
     return apiRequest('/users', {token});
 }
 
+export function fetchUserCount(){
+    return apiRequest('/users/count');
+}
+
 export function updateUserRole(id, role, token){
     return apiRequest(`/users/${id}/role`, {method: 'PUT', body: {role}, token});
 }

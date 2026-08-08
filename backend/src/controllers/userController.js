@@ -10,6 +10,15 @@ async function list(req, res, next) {
   }
 }
 
+async function count(req, res, next) {
+  try {
+    const count = await User.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function updateRole(req, res, next) {
   try {
     const { role } = req.body;
@@ -119,4 +128,4 @@ async function deleteMe(req, res, next) {
   }
 }
 
-module.exports = { list, updateRole, remove, getMe, updateMe, changePassword, deleteMe };
+module.exports = { list, count, updateRole, remove, getMe, updateMe, changePassword, deleteMe };

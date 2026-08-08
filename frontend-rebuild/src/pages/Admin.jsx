@@ -6,6 +6,7 @@ import LogsPanel from '../components/admin/LogsPanel'
 import AnalyticsPanel from '../components/admin/AnalyticsPanel'
 import CategoryPanel from '../components/admin/CategoryPanel'
 import SettingsPanel from '../components/admin/SettingsPanel'
+import CommentsPanel from '../components/admin/CommentsPanel'
 import Button from '../components/ui/Button'
 
 const NAV_GROUPS = [
@@ -13,6 +14,7 @@ const NAV_GROUPS = [
         heading: 'Nội dung', items: [
             { key: 'posts', label: 'Bài viết', icon: 'fa-solid fa-file-lines' },
             { key: 'categories', label: 'Danh mục', icon: 'fa-solid fa-folder-open' },
+            { key: 'comments', label: 'Bình luận', icon: 'fa-solid fa-comments' },
         ]
     },
     {
@@ -28,7 +30,6 @@ const NAV_GROUPS = [
         ]
     },
 ];
-const NAV_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
 
 const PANELS = {
     users: UsersPanel,
@@ -36,6 +37,7 @@ const PANELS = {
     analytics: AnalyticsPanel,
     categories: CategoryPanel,
     settings: SettingsPanel,
+    comments: CommentsPanel,
 };
 
 function Admin() {
@@ -58,24 +60,12 @@ function Admin() {
 
     return (
         <section className="mx-auto max-w-6xl px-4 py-8">
-            <nav className="mb-6 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-                {NAV_ITEMS.map((item) => (
-                    <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => setSection(item.key)}
-                        className={`flex shrink-0 items-center gap-1.5 rounded-fwm-pill px-3.5 py-2 font-head text-sm font-bold ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'bg-fwm-pill text-fwm-text'}`}
-                    >
-                        <i className={item.icon} aria-hidden="true"></i>{item.label}
-                    </button>
-                ))}
-            </nav>
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr]">
-                <aside className="hidden lg:block">
-                    <nav className="sticky top-24 space-y-5">
+            <div className="grid grid-cols-[64px_1fr] gap-4 sm:gap-6 lg:grid-cols-[220px_1fr] lg:gap-8">
+                <aside>
+                    <nav className="space-y-1 lg:sticky lg:top-24 lg:space-y-5">
                         {NAV_GROUPS.map((group) => (
                             <div key={group.heading}>
-                                <p className="mb-1.5 px-3 font-head text-xs font-bold uppercase tracking-wide text-fwm-muted">
+                                <p className="mb-1.5 hidden px-3 font-head text-xs font-bold uppercase tracking-wide text-fwm-muted lg:block">
                                     {group.heading}
                                 </p>
                                 <div className="space-y-1">
@@ -83,10 +73,13 @@ function Admin() {
                                         <button
                                             key={item.key}
                                             type="button"
+                                            aria-label={item.label}
+                                            title={item.label}
                                             onClick={() => setSection(item.key)}
-                                            className={`flex w-full items-center gap-2.5 rounded-fwm px-3 py-2.5 text-left font-head text-sm font-bold ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}
+                                            className={`flex w-full items-center justify-center gap-2.5 rounded-fwm px-2 py-2.5 text-left font-head text-sm font-bold lg:justify-start lg:px-3 ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}
                                         >
-                                            <i className={item.icon} aria-hidden="true"></i>{item.label}
+                                            <i className={item.icon} aria-hidden="true"></i>
+                                            <span className="hidden lg:inline">{item.label}</span>
                                         </button>
                                     ))}
                                 </div>

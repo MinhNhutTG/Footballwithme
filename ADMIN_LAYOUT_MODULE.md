@@ -405,6 +405,134 @@ export default Admin;
 
 ---
 
+## Bản sửa 2 — bỏ thanh tab ngang mobile, dùng 1 sidebar responsive duy nhất
+
+Sau khi thêm tab "Bình luận" (`COMMENT_MODERATION_MODULE.md`), sidebar có **7 mục** — thanh tab cuộn ngang ở Bản sửa 1 (dùng cho `<lg`) bắt đầu bộc lộ đúng vấn đề mà thiết kế "xếp hàng ngang" luôn gặp: càng nhiều mục càng dễ tràn/xấu, không mở rộng tốt. Phản hồi: **bỏ hẳn thanh tab ngang riêng cho mobile, chỉ dùng 1 sidebar trái — phải duy nhất ở mọi kích thước màn hình**, không đổi cấu trúc sang dạng khác theo breakpoint nữa.
+
+**Giải pháp:** 1 `<aside>` responsive duy nhất (không còn 2 khối `<nav>` tách biệt như Bản sửa 1):
+- **Dưới `lg`**: dải icon hẹp (~64px), chỉ hiện icon, không hiện label/tên nhóm — vẫn đứng y nguyên bên trái, không đẩy nội dung xuống dưới như thiết kế gốc trước Bản sửa 1.
+- **Từ `lg` trở lên**: y hệt Bản sửa 1 — sidebar 220px, đủ label + tên nhóm + sticky.
+- Cùng 1 nguồn `NAV_GROUPS`, cùng 1 khối JSX — không cần `NAV_ITEMS` (mảng làm phẳng chỉ phục vụ thanh tab ngang cũ) nữa, xoá luôn.
+
+**Dán lại toàn bộ `frontend-rebuild/src/pages/Admin.jsx`:**
+
+```jsx
+import { useAuth } from '../context/AuthContext'
+import { useSearchParams } from 'react-router-dom'
+import PostsPanel from '../components/admin/PostsPanel'
+import UsersPanel from '../components/admin/UsersPanel'
+import LogsPanel from '../components/admin/LogsPanel'
+import AnalyticsPanel from '../components/admin/AnalyticsPanel'
+import CategoryPanel from '../components/admin/CategoryPanel'
+import SettingsPanel from '../components/admin/SettingsPanel'
+import CommentsPanel from '../components/admin/CommentsPanel'
+import Button from '../components/ui/Button'
+
+const NAV_GROUPS = [
+    {
+        heading: 'Nội dung', items: [
+            { key: 'posts', label: 'Bài viết', icon: 'fa-solid fa-file-lines' },
+            { key: 'categories', label: 'Danh mục', icon: 'fa-solid fa-folder-open' },
+            { key: 'comments', label: 'Bình luận', icon: 'fa-solid fa-comments' },
+        ]
+    },
+    {
+        heading: 'Phân tích', items: [
+            { key: 'analytics', label: 'Thống kê', icon: 'fa-solid fa-chart-column' },
+            { key: 'logs', label: 'Nhật ký truy cập', icon: 'fa-solid fa-clock-rotate-left' },
+        ]
+    },
+    {
+        heading: 'Hệ thống', items: [
+            { key: 'users', label: 'Người dùng', icon: 'fa-solid fa-user' },
+            { key: 'settings', label: 'Cài đặt', icon: 'fa-solid fa-gear' },
+        ]
+    },
+];
+
+const PANELS = {
+    users: UsersPanel,
+    logs: LogsPanel,
+    analytics: AnalyticsPanel,
+    categories: CategoryPanel,
+    settings: SettingsPanel,
+    comments: CommentsPanel,
+};
+
+function Admin() {
+    const { token, user, isAdmin } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const section = searchParams.get('tab') || 'posts';
+    const setSection = (key) => setSearchParams(key === 'posts' ? {} : { tab: key });
+
+    if (!isAdmin) {
+        return (
+            <section className="mx-auto max-w-md px-4 py-24 text-center">
+                <h1 className="font-head text-2xl font-black text-fwm-text">Quản trị nội dung</h1>
+                <p className="mt-3 text-fwm-muted">Bạn cần đăng nhập với quyền quản trị để truy cập trang này.</p>
+                <Button to="/admin/login" variant="primary" className="mt-6 inline-flex">Đăng nhập</Button>
+            </section>
+        );
+    }
+
+    const Panel = PANELS[section];
+
+    return (
+        <section className="mx-auto max-w-6xl px-4 py-8">
+            <div className="grid grid-cols-[64px_1fr] gap-4 sm:gap-6 lg:grid-cols-[220px_1fr] lg:gap-8">
+                <aside>
+                    <nav className="space-y-1 lg:sticky lg:top-24 lg:space-y-5">
+                        {NAV_GROUPS.map((group) => (
+                            <div key={group.heading}>
+                                <p className="mb-1.5 hidden px-3 font-head text-xs font-bold uppercase tracking-wide text-fwm-muted lg:block">
+                                    {group.heading}
+                                </p>
+                                <div className="space-y-1">
+                                    {group.items.map((item) => (
+                                        <button
+                                            key={item.key}
+                                            type="button"
+                                            aria-label={item.label}
+                                            title={item.label}
+                                            onClick={() => setSection(item.key)}
+                                            className={`flex w-full items-center justify-center gap-2.5 rounded-fwm px-2 py-2.5 text-left font-head text-sm font-bold lg:justify-start lg:px-3 ${section === item.key ? 'bg-fwm-accent text-fwm-ink' : 'text-fwm-text hover:bg-fwm-pill'}`}
+                                        >
+                                            <i className={item.icon} aria-hidden="true"></i>
+                                            <span className="hidden lg:inline">{item.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </nav>
+                </aside>
+                <div className="min-w-0">
+                    {Panel ? <Panel token={token} currentUserId={user?._id} /> : <PostsPanel token={token} />}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+export default Admin;
+```
+
+Điểm dễ nhầm nếu tự gõ lại:
+- **`grid-cols-[64px_1fr]` ở mọi kích thước, đổi thành `lg:grid-cols-[220px_1fr]` từ `lg` trở lên** — chỉ đổi độ rộng cột trái, cấu trúc 2 cột trái/phải giữ nguyên xuyên suốt, không còn nhánh "1 cột dồn nội dung xuống dưới" như thiết kế gốc trước Bản sửa 1.
+- **`aria-label={item.label}` bắt buộc thêm mới** — vì `<span>{item.label}</span>` bị `hidden` (mất khỏi cây accessibility) ở màn hình nhỏ, nút chỉ còn icon không có text cho trình đọc màn hình nếu thiếu `aria-label` này.
+- **`title={item.label}`** thêm để hiện tooltip khi rê chuột qua icon ở dải hẹp (không có tác dụng trên cảm ứng, nhưng vô hại, không cần bọc điều kiện riêng cho mobile).
+- **`lg:sticky lg:top-24` đặt trên `<nav>` bên trong, không phải `<aside>` ngoài** — giữ nguyên vị trí đặt từ Bản sửa 1, không đổi.
+- Đã xoá hẳn `const NAV_ITEMS = NAV_GROUPS.flatMap(...)` — biến này chỉ phục vụ thanh tab ngang cũ, nay không còn nơi nào dùng tới.
+
+**Kiểm tra:**
+- Thu nhỏ trình duyệt xuống dưới 1024px (hoặc mở DevTools responsive, chọn iPhone) → sidebar vẫn nằm cố định bên trái (không còn nhảy lên trên nội dung), chỉ còn dải icon hẹp ~64px, không tràn/không cuộn ngang dù có 7 mục.
+- Rê chuột qua từng icon ở dải hẹp → hiện tooltip đúng tên mục (`title`).
+- Từ 1024px trở lên → sidebar mở rộng đủ 220px, hiện đủ icon + label + tên nhóm + sticky khi cuộn, y hệt Bản sửa 1.
+- Bấm chọn tab ở dải hẹp (mobile) → đổi đúng `?tab=` trên URL và hiện đúng panel, giống hệt hành vi cũ.
+- Test với trình đọc màn hình (hoặc kiểm tra DOM qua DevTools) → mỗi nút ở dải hẹp có `aria-label` đúng tên mục dù không hiện chữ.
+
+---
+
 ## Còn cần bạn chốt
 
 Không có — bạn đã giao quyền quyết định thiết kế cho lượt này. Nếu sau khi dùng thử thấy hướng nào (icon/tên nhóm/vị trí sticky) chưa ưng, có thể chỉnh trực tiếp ở `NAV_GROUPS` trong `Admin.jsx` (đổi icon emoji hoặc câu chữ), không cần sửa gì ở tầng dữ liệu/logic.

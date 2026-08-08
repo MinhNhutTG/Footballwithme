@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const Post = require('../models/Post');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const sendReplyNotification = require('../utils/sendReplyNotification');
@@ -43,6 +44,36 @@ async function list(req, res, next) {
       .sort({ createdAt: 1 });
 
     res.json(comments);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listAll(req, res, next) {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      Comment.find({ isDeleted: false })
+        .populate('author', 'name avatarUrl')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Comment.countDocuments({ isDeleted: false }),
+    ]);
+
+    const postIds = [...new Set(data.map((c) => c.postId))];
+    const posts = await Post.find({ _id: { $in: postIds } }).select('title');
+    const titleById = Object.fromEntries(posts.map((p) => [p._id.toString(), p.title.vi]));
+
+    const withPostTitle = data.map((c) => ({
+      ...c.toObject(),
+      postTitle: titleById[c.postId] || null,
+    }));
+
+    res.json({ data: withPostTitle, total, page, pages: Math.ceil(total / limit) || 1 });
   } catch (err) {
     next(err);
   }
@@ -119,4 +150,4 @@ async function remove(req, res, next) {
   }
 }
 
-module.exports = { list, create, remove };
+module.exports = { list, create, remove, listAll };

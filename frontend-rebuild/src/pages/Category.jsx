@@ -1,13 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryTile from "../components/article/CategoryTile";
 import SectionHeading from "../components/common/SectionHeading"
 import { useLang } from "../context/LangContext"
 import { useCategories } from "../context/CategoryContext";
-import { usePosts } from "../context/PostsContext";
+import { fetchPosts } from "../api/posts";
 import Chip from '../components/ui/Chip'
 import ArticleCard from "../components/article/ArticleCard";
 import PopularItem from '../components/article/PopularItem'
+import Button from '../components/ui/Button'
 import { useParams } from "react-router-dom";
+
+const POSTS_PER_PAGE = 6;
 
 function CategoryOverview() {
     const { t } = useLang();
@@ -26,15 +29,37 @@ function CategoryOverview() {
 
 function CategoryDetail({ categoryId }) {
     const { lang, t } = useLang();
-    const { posts } = usePosts();
     const { categories } = useCategories();
     const [activeTag, setActiveTag] = useState('all');
-    const categoryArticles = useMemo(() => posts.filter((post) => post.category === categoryId), [categoryId, posts]);
-    const tags = useMemo(() => Array.from(new Set(categoryArticles.flatMap((a) => a.tags))), [categoryArticles]);
-    const filtered = activeTag === 'all' ? categoryArticles : categoryArticles.filter((cat) => cat.tags.includes(activeTag))
+    const [page, setPage] = useState(1);
+    const [result, setResult] = useState({ data: [], total: 0, pages: 1, tags: [] });
+    const [loading, setLoading] = useState(true);
+    const [popular, setPopular] = useState([]);
 
     const category = categories.find((c) => c.slug === categoryId);
-    const popular = [...posts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+
+    useEffect(() => {
+        setPage(1);
+    }, [categoryId, activeTag]);
+
+    useEffect(() => {
+        setLoading(true);
+        fetchPosts({
+            category: categoryId,
+            tag: activeTag === 'all' ? undefined : activeTag,
+            page,
+            limit: POSTS_PER_PAGE,
+        })
+            .then(setResult)
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, [categoryId, activeTag, page]);
+
+    useEffect(() => {
+        fetchPosts({ sort: 'views', limit: 5 })
+            .then((res) => setPopular(res.data))
+            .catch(() => {});
+    }, []);
 
     if (!category) return null;
     return (
@@ -50,7 +75,7 @@ function CategoryDetail({ categoryId }) {
                     </h1>
                     <p className="mt-2 max-w-md text-white/85"> {category.desc[lang]}</p>
                     <p className="mt-4 font-head text-xs font-bold uppercase tracking-wide text-white/70">
-                        {categoryArticles.length} {t.category.countSuffix}
+                        {result.total} {t.category.countSuffix}
                     </p>
                 </div>
             </section >
@@ -60,15 +85,30 @@ function CategoryDetail({ categoryId }) {
                         <Chip active={activeTag === 'all'} onClick={() => setActiveTag('all')}>
                             {t.category.allTags}
                         </Chip>
-                        {tags.map((tag) => (
+                        {result.tags.map((tag) => (
                             <Chip key={tag} active={activeTag === tag} onClick={() => setActiveTag(tag)}>{tag}</Chip>
                         ))}
                     </div>
-                    {filtered.length === 0 ? (
+                    {!loading && result.data.length === 0 ? (
                         <p className="text-fwm-muted">{t.category.empty}</p>
                     ) : (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                            {filtered.map((article) => <ArticleCard key={article.id} article={article}></ArticleCard>)}
+                            {result.data.map((article) => <ArticleCard key={article.id} article={article}></ArticleCard>)}
+                        </div>
+                    )}
+                    {result.pages > 1 && (
+                        <div className="mt-6 flex items-center justify-between">
+                            <p className="text-sm text-fwm-muted">
+                                Trang {page}/{result.pages}
+                            </p>
+                            <div className="flex gap-2">
+                                <Button type="button" variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                                    Trước
+                                </Button>
+                                <Button type="button" variant="ghost" disabled={page >= result.pages} onClick={() => setPage((p) => p + 1)}>
+                                    Sau
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -78,7 +118,7 @@ function CategoryDetail({ categoryId }) {
                         {t.category.popularHeading}
                     </h3>
                     <div className="rounded-fwm-lg border border-fwm-line bg-fwm-card p-2">
-                        {popular.map((article, i) => <PopularItem key={article.id} article={article} rank={i + 1}  ></PopularItem>)}
+                        {popular.map((article, i) => <PopularItem key={article.id} article={article} rank={i + 1}></PopularItem>)}
                     </div>
                 </aside>
             </section>

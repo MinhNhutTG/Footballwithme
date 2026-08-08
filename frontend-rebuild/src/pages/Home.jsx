@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useLang } from '../context/LangContext'
 import Button from '../components/ui/Button'
 import SectionHeading from '../components/common/SectionHeading';
-import { usePosts } from '../context/PostsContext'
+import { fetchPosts } from '../api/posts'
 import ArticleCard from '../components/article/ArticleCard'
 import CategoryTitle from '../components/article/CategoryTile'
 import { useCategories } from '../context/CategoryContext'
@@ -14,9 +15,14 @@ const COMBO_KEYS = [
 
 function Home() {
     const { t } = useLang();
-    const { posts } = usePosts();
     const { categories } = useCategories();
-    const lastes = posts.slice(0, 6);
+    const [latest, setLatest] = useState([]);
+
+    useEffect(() => {
+        fetchPosts({ limit: 6 })
+            .then((res) => setLatest(res.data))
+            .catch(() => {});
+    }, []);
     return (
         <div className="animate-fwm-in">
             <section className="relative overflow-hidden border-b border-fwm-line bg-fwm-bg-deep">
@@ -94,7 +100,7 @@ function Home() {
             <section className="mx-auto max-w-6xl px-4 py-14">
                 <SectionHeading title={t.section.latest} viewAllTo="/chuyen-muc"></SectionHeading>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {lastes.map((article) => <ArticleCard key={article.id} article={article} ></ArticleCard>)}
+                    {latest.map((article) => <ArticleCard key={article.id} article={article} ></ArticleCard>)}
                 </div>
             </section>
             

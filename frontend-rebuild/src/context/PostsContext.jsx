@@ -11,7 +11,7 @@ export function PostsProvider({ children }) {
     const refetch = useCallback(() => {
         setLoading(true);
         return fetchPosts()
-            .then((data) => setPosts(data))
+            .then((res) => setPosts(res.data))
             .catch((err) => setError(err.message))
             .finally(() => { setLoading(false) })
 

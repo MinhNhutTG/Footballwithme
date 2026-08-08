@@ -4,10 +4,16 @@ function normalize(post) {
   return { ...post, id: post._id };
 }
 
-export async function fetchPosts(category){
-    const query = category ? `?category=${category}` : '';
-    const posts = await apiRequest(`/posts${query}`, {method:'GET'});
-    return posts.map((post)=> normalize(post))
+export async function fetchPosts({ category, tag, page, limit, sort } = {}){
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (tag) params.set('tag', tag);
+    if (page) params.set('page', page);
+    if (limit) params.set('limit', limit);
+    if (sort) params.set('sort', sort);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    const res = await apiRequest(`/posts${query}`, {method:'GET'});
+    return { ...res, data: res.data.map((post) => normalize(post)) };
 }
 
 export async function fetchPost(id){

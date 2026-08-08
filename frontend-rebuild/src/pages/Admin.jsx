@@ -52,10 +52,10 @@ function Admin() {
     const { categories } = useCategories();
 
     useEffect(() => {
-        if (!isAdmin) return false;
+        if (!isAdmin) return;
         setLoading(true);
         fetchPosts()
-            .then(setPosts).catch((err) => setError(err.message)).finally(() => setLoading(false))
+            .then((res) => setPosts(res.data)).catch((err) => setError(err.message)).finally(() => setLoading(false))
     }, [isAdmin])
 
     useEffect(() => {
@@ -73,6 +73,7 @@ function Admin() {
         const category = categories.find((c) => c.slug === form.category);
         const payload = {
             category: form.category,
+            gradient: category?.gradient,
             title: { vi: form.titleVi, en: form.titleEn },
             excerpt: { vi: form.excerptVi, en: form.excerptEn },
             intro: { vi: form.introVi, en: form.introEn },
@@ -97,7 +98,7 @@ function Admin() {
                 setPosts((prev) => prev.map((p) => (p.id === editingId ? updated : p)));
             }
             else {
-                const created = await createPost({ ...payload, gradient: category?.gradient }, token);
+                const created = await createPost(payload, token);
                 setPosts((prev) => [created, ...prev]);
             }
             setView('list');

@@ -6,8 +6,31 @@ async function list(req, res, next) {
   try {
     const filter = {};
     if (req.query.category) filter.category = req.query.category;
-    const posts = await Post.find(filter).sort({ createdAt: -1 });
-    res.json(posts);
+    if (req.query.tag) filter.tags = req.query.tag;
+
+    const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : null;
+    const limit = req.query.limit ? Math.max(1, parseInt(req.query.limit)) : null;
+    const sortField = req.query.sort === 'views' ? { views: -1 } : { createdAt: -1 };
+
+    let query = Post.find(filter).sort(sortField);
+    if (limit) {
+      query = query.limit(limit);
+      if (page) query = query.skip((page - 1) * limit);
+    }
+
+    const [data, total, tags] = await Promise.all([
+      query,
+      Post.countDocuments(filter),
+      req.query.category ? Post.distinct('tags', { category: req.query.category }) : Promise.resolve([]),
+    ]);
+
+    res.json({
+      data,
+      total,
+      page: page || 1,
+      pages: limit ? Math.max(1, Math.ceil(total / limit)) : 1,
+      tags,
+    });
   } catch (err) {
     next(err);
   }
